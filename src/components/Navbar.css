@@ -1,0 +1,87 @@
+/* mix-blend-mode: difference makes nav text auto-readable on both the white
+   hero (#f4f4f2) and the dark site sections (#0a0a0a) — no manual color
+   switching needed. #fff difference with white ≈ black; with black ≈ white. */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 200;
+  mix-blend-mode: difference;
+  color: #fff;
+  transition: border-color 0.4s ease;
+}
+
+.nav.is-scrolled {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.nav__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 18px clamp(20px, 4vw, 56px);
+}
+
+.nav__logo {
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #fff;
+  text-decoration: none;
+}
+.nav__logo span {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.nav__links {
+  display: flex;
+  align-items: center;
+  gap: clamp(16px, 2vw, 34px);
+}
+
+.nav__links a {
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: #fff;
+  text-decoration: none;
+  letter-spacing: 0.01em;
+  transition: opacity 0.25s ease;
+}
+.nav__links a:hover {
+  opacity: 0.6;
+}
+
+.nav__cta {
+  padding: 9px 18px;
+  border: 1px solid #fff;
+  border-radius: 100px;
+  transition: opacity 0.25s ease !important;
+}
+.nav__cta:hover {
+  opacity: 0.6;
+}
+
+.nav__email {
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  color: #fff;
+  text-decoration: none;
+  transition: opacity 0.25s ease;
+}
+.nav__email:hover {
+  opacity: 0.6;
+}
+
+@media (max-width: 860px) {
+  .nav__email {
+    display: none;
+  }
+  .nav__links {
+    gap: 14px;
+  }
+  .nav__links a:not(.nav__cta) {
+    display: none;
+  }
+}

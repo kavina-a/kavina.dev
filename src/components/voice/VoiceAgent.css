@@ -1,0 +1,193 @@
+.voice-agent {
+  position: fixed;
+  right: clamp(16px, 3vw, 28px);
+  bottom: clamp(16px, 3vw, 28px);
+  z-index: 120;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.voice-agent > * {
+  pointer-events: auto;
+}
+
+.voice-agent__panel {
+  width: min(340px, calc(100vw - 32px));
+  padding: 20px 22px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+  background: rgba(10, 10, 10, 0.92);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+  animation: voicePanelIn 0.45s var(--ease-power3-out) both;
+}
+
+@keyframes voicePanelIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.voice-agent__label {
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted, #6a6a6a);
+  margin-bottom: 8px;
+}
+
+.voice-agent__status {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.voice-agent__hint {
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.55);
+  margin-bottom: 18px;
+}
+
+.voice-agent__wave {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 28px;
+  margin-bottom: 18px;
+}
+
+.voice-agent__wave span {
+  display: block;
+  width: 3px;
+  border-radius: 999px;
+  background: #6affb4;
+  animation: voiceBar 0.9s ease-in-out infinite;
+}
+
+.voice-agent__wave span:nth-child(2) { animation-delay: 0.12s; }
+.voice-agent__wave span:nth-child(3) { animation-delay: 0.24s; }
+.voice-agent__wave span:nth-child(4) { animation-delay: 0.36s; }
+.voice-agent__wave span:nth-child(5) { animation-delay: 0.48s; }
+
+.voice-agent__wave.is-idle span {
+  animation: none;
+  height: 6px !important;
+  opacity: 0.35;
+}
+
+@keyframes voiceBar {
+  0%, 100% { height: 6px; opacity: 0.45; }
+  50% { height: 24px; opacity: 1; }
+}
+
+.voice-agent__actions {
+  display: flex;
+  gap: 10px;
+}
+
+.voice-agent__actions button {
+  flex: 1;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #fff;
+  background: transparent;
+  transition: background 0.25s, color 0.25s, border-color 0.25s;
+}
+
+.voice-agent__actions button:hover {
+  background: #fff;
+  color: #0a0a0a;
+  border-color: #fff;
+}
+
+.voice-agent__actions button.is-primary {
+  background: #fff;
+  color: #0a0a0a;
+  border-color: #fff;
+}
+
+.voice-agent__actions button.is-primary:hover {
+  background: #6affb4;
+  border-color: #6affb4;
+}
+
+.voice-agent__actions button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.voice-agent__actions button:disabled:hover {
+  background: transparent;
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.voice-agent__actions button.is-primary:disabled:hover {
+  background: #fff;
+  color: #0a0a0a;
+}
+
+.voice-agent__toast {
+  font-size: 0.78rem;
+  color: #6affb4;
+  margin-top: 12px;
+  line-height: 1.4;
+}
+
+.voice-agent__toast.is-error {
+  color: #ff8a8a;
+}
+
+.voice-agent__launcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px 14px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(10, 10, 10, 0.88);
+  backdrop-filter: blur(12px);
+  color: #fff;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.35);
+  transition: transform 0.3s var(--ease-power3-out), border-color 0.3s, background 0.3s;
+}
+
+.voice-agent__launcher:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.28);
+  background: rgba(18, 18, 18, 0.95);
+}
+
+.voice-agent__launcher-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #6affb4;
+  box-shadow: 0 0 12px rgba(106, 255, 180, 0.65);
+}
+
+.voice-agent__launcher.is-live .voice-agent__launcher-dot {
+  animation: voicePulse 1.4s ease-in-out infinite;
+}
+
+@keyframes voicePulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.55; transform: scale(0.85); }
+}

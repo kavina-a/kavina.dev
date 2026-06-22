@@ -1,0 +1,121 @@
+/* ============ ABOUT ME ============ */
+/* Base stays black so there's no seam with Featured Work above; the white
+   sheet fades in over it (scroll-scrubbed) for the black → grey → white glide. */
+.aboutme {
+  position: relative;
+  background: #0a0a0a;
+  padding: clamp(140px, 22vh, 320px) clamp(20px, 4vw, 56px) clamp(120px, 18vh, 260px);
+  overflow: hidden;
+}
+
+.aboutme__sheet {
+  position: absolute;
+  inset: 0;
+  background: #f4f4f2;
+  opacity: 0;            /* GSAP scrubs 0 → 1 */
+  pointer-events: none;
+  z-index: 0;
+}
+
+.aboutme__content {
+  position: relative;
+  z-index: 1;
+  max-width: 1280px;
+  margin: 0 auto;
+  color: #f4f4f2;        /* GSAP scrubs toward #0a0a0a */
+}
+
+.aboutme__eyebrow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.55;
+  padding-bottom: 28px;
+  border-bottom: 1px solid currentColor;
+  margin-bottom: clamp(48px, 7vh, 96px);
+}
+
+.aboutme__lead {
+  font-size: clamp(1.7rem, 4vw, 3.6rem);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  max-width: 20ch;
+  margin-bottom: clamp(64px, 10vh, 150px);
+}
+
+/* ---- gallery ---- */
+.aboutme__gallery {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: clamp(16px, 3.2vw, 56px);
+  margin-bottom: clamp(72px, 12vh, 180px);
+}
+
+.fluid-image {
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #111;
+  flex: 0 0 auto;
+  will-change: transform;
+}
+.fluid-image__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* staggered sizes + vertical offsets, echoing the reference layout */
+.aboutme__frame--left {
+  width: clamp(180px, 24vw, 360px);
+  aspect-ratio: 3 / 4;
+  margin-top: clamp(40px, 9vh, 120px);
+}
+.aboutme__frame--center {
+  width: clamp(240px, 33vw, 520px);
+  aspect-ratio: 3 / 4.3;
+  margin-top: 0;
+  z-index: 2;
+}
+.aboutme__frame--right {
+  width: clamp(160px, 22vw, 330px);
+  aspect-ratio: 4 / 5;
+  margin-top: clamp(80px, 16vh, 220px);
+}
+
+.aboutme__body {
+  display: flex;
+  justify-content: flex-end;
+}
+.aboutme__body p {
+  font-size: clamp(1.05rem, 1.7vw, 1.5rem);
+  line-height: 1.55;
+  max-width: 46ch;
+  opacity: 0.78;
+}
+
+@media (max-width: 820px) {
+  .aboutme {
+    padding-top: clamp(110px, 18vh, 200px);
+  }
+  .aboutme__gallery {
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+  .aboutme__frame--left,
+  .aboutme__frame--center,
+  .aboutme__frame--right {
+    width: 100%;
+    max-width: none;
+    margin-top: 0;
+    aspect-ratio: 4 / 3;
+  }
+  .aboutme__body {
+    justify-content: flex-start;
+  }
+}

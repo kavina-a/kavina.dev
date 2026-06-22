@@ -1,0 +1,54 @@
+/* Fixed to the right edge, anchored at the bottom.
+   mix-blend-mode: difference — same inversion trick as the hero text:
+   white (#fff) over the off-white hero ≈ near-black; over fluid ink = white. */
+.social-sidebar {
+  position: fixed;
+  right: clamp(16px, 2.5vw, 36px);
+  bottom: 0;
+  z-index: 150;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+  mix-blend-mode: difference;
+}
+
+.social-sidebar__links {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  pointer-events: all;
+}
+
+/* writing-mode + rotate so each name reads bottom-to-top (upward) */
+.social-sidebar__link {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #fff;
+  text-decoration: none;
+  transition: opacity 0.25s ease;
+}
+
+.social-sidebar__link:hover {
+  opacity: 0.5;
+}
+
+/* Thin line connecting the links to the page bottom */
+.social-sidebar__line {
+  display: block;
+  width: 1px;
+  height: clamp(48px, 8vh, 80px);
+  background: #fff;
+  margin-top: 22px;
+}
+
+@media (max-width: 720px) {
+  .social-sidebar {
+    display: none;
+  }
+}

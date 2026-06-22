@@ -1,0 +1,92 @@
+:root {
+  /* Intro stage */
+  --intro-bg: #ffffff;
+  --intro-ink: #0a0a0a;
+  --intro-muted: rgba(10, 10, 10, 0.55);
+
+  /* Main site (dark) */
+  --bg: #0a0a0a;
+  --bg-alt: #111111;
+  --text: #ffffff;
+  --text-muted: #6a6a6a;
+
+  --font-primary: "Inter", "Helvetica Neue", Arial, sans-serif;
+
+  /* Easing tokens that mirror GSAP curves */
+  --ease-power3-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-expo-out: cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+/* ── Lenis smooth-scroll foundation ─────────────────────────── */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-primary);
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+/* Lock scroll while the intro is on stage. Toggled off via JS after the outro. */
+body.intro-active {
+  overflow: hidden;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  will-change: auto;
+}
+
+/* GPU-accelerate elements that GSAP will transform */
+[data-cursor],
+.awards-col,
+.awards-col__group,
+.awards-frame,
+.footer__tagline {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+button {
+  font-family: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+}
+
+/* Hide native cursor in favor of the custom one (pointer devices only) */
+@media (pointer: fine) {
+  * {
+    cursor: none !important;
+  }
+}
