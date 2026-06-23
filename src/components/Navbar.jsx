@@ -1,6 +1,14 @@
 import { useEffect, useState } from "react";
 import "./Navbar.css";
 
+const NAV_LINKS = [
+  { href: "#about", label: "About" },
+  { href: "#work", label: "Work" },
+  { href: "#techstack", label: "Tech Stack" },
+  { href: "#projects", label: "Projects" },
+  { href: "#contact", label: "Start a Project", cta: true },
+];
+
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
 
@@ -14,16 +22,14 @@ export default function Navbar() {
     <header className={`nav ${scrolled ? "is-scrolled" : ""}`}>
       <div className="nav__inner">
         <a href="#top" className="nav__logo">
-          kavina<span>.me</span>
+          KAVINA<span>.me</span>
         </a>
-        <nav className="nav__links">
-          <a href="#work">Work</a>
-          <a href="#about">About</a>
-          <a href="#projects">Projects</a>
-          <a href="#techstack">Tech Stack</a>
-          <a href="#contact" className="nav__cta">
-            Start a Project
-          </a>
+        <nav className="nav__links" aria-label="Primary">
+          {NAV_LINKS.map(({ href, label, cta }) => (
+            <a key={href} href={href} className={cta ? "nav__cta" : undefined}>
+              {label}
+            </a>
+          ))}
         </nav>
         <a href="mailto:hi@kavina.me" className="nav__email">
           HI@KAVINA.ME

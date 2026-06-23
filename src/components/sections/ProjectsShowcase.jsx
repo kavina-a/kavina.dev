@@ -19,6 +19,7 @@ import {
 } from "react-icons/si";
 import { gsap, ScrollTrigger } from "../../lib/gsap";
 import { PROJECTS } from "../../data/site";
+import ProjectGalleryRecap from "./ProjectGalleryRecap";
 import "./ProjectsShowcase.css";
 
 // ─── Tech icon map ─────────────────────────────────────────────────────────
@@ -458,7 +459,11 @@ export default function ProjectsShowcase() {
                   <div className="ps__card-inner">
                     {/* Background image */}
                     <div className="ps__card-media">
-                      <img src={p.img} alt={p.title} loading="lazy" draggable="false" />
+                      {p.gallery?.length > 1 ? (
+                        <ProjectGalleryRecap images={p.gallery} alt={p.title} />
+                      ) : (
+                        <img src={p.img} alt={p.title} loading="lazy" draggable="false" />
+                      )}
                     </div>
 
                     {/* Gradient veil */}

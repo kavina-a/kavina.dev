@@ -10,6 +10,14 @@ const LOGO_MAP = {
   "TUTOPIYA": "/company-logo/tutopiya.png",
 };
 
+function parseDateRange(raw) {
+  const parts = raw.split(/\s*[—–-]\s*/);
+  if (parts.length >= 2) {
+    return { start: parts[0].trim(), end: parts.slice(1).join(" — ").trim() };
+  }
+  return { start: raw.trim(), end: null };
+}
+
 // ─── Text colour palettes ──────────────────────────────────────────────────────
 const LIGHT = {
   name:  "#0a0a0a",
@@ -252,6 +260,7 @@ function HoverList({ items }) {
           const company = p.tags[0];
           const date    = p.tags[1];
           const logo    = LOGO_MAP[company.toUpperCase()] ?? LOGO_MAP[company];
+          const { start, end } = parseDateRange(date);
 
           return (
             <li
@@ -268,20 +277,25 @@ function HoverList({ items }) {
                 {/* ── Col 1: Company identity ── */}
                 <div className="work-list__company">
                   {logo ? (
-                    <>
-                      <img src={logo} alt={company} className="work-list__logo" />
-                      <span className="work-list__tags work-list__date">{date}</span>
-                    </>
+                    <img src={logo} alt={company} className="work-list__logo" />
                   ) : (
-                    <>
-                      <span className="work-list__name work-list__company-label">{company}</span>
-                      <span className="work-list__tags">{date}</span>
-                    </>
+                    <span className="work-list__name work-list__company-label">{company}</span>
                   )}
                 </div>
 
-                {/* ── Col 2: Role title ── */}
-                <span className="work-list__name work-list__role">{p.title}</span>
+                {/* ── Col 2: Timeline + role ── */}
+                <div className="work-list__role-block">
+                  <time className="work-list__when" dateTime={date.replace(/\s*—\s*/g, "/")}>
+                    <span className="work-list__when-start">{start}</span>
+                    {end && (
+                      <>
+                        <span className="work-list__when-tick" aria-hidden="true" />
+                        <span className="work-list__when-end">{end}</span>
+                      </>
+                    )}
+                  </time>
+                  <span className="work-list__name work-list__role">{p.title}</span>
+                </div>
 
                 {/* ── Col 3: Blurb ── */}
                 <span className="work-list__blurb">{p.blurb}</span>
@@ -301,7 +315,7 @@ export default function Work() {
     <section className="section work" id="work">
       <p className="section__label">Experience</p>
       <Reveal as="words" className="section__heading">
-        Places I've shipped code, calls, and the occasional proof.
+      Good people. Interesting problems. Lots of learning.
       </Reveal>
 
       <HoverList items={FEATURED} />

@@ -58,7 +58,7 @@ export const SECONDARY = [
 // crop pans as the frame scrolls through the viewport; `parallaxAmount` is how
 // far it travels (uv units). `zoom` is the cover zoom (gives the pan headroom).
 export const ABOUT = {
-  eyebrow: ["(THE) PERSON", "BEHIND THE PIXELS"],
+  eyebrow: ["(AI/ML) ENGINEER"],
   lead:
   "Hi, I’m Kavina - An engineer with a simple goal: to build technology that gives people more time to be human.",
   images: [
@@ -149,17 +149,24 @@ export const PROJECTS = [
     accent: "#a78bfa",
   },
   {
-    id: "emotional-npc",
-    title: "EMOTIONAL NPC AI",
-    subtitle: "NPCs with memory and moods",
+    id: "axis",
+    title: "AXIS",
+    subtitle: "NPCs that feel real, not just look real",
     year: "2026",
     category: "Game × Research",
     description:
-      "Characters that remember your choices and react like it. Episodic memory plus emotional state so they feel like people in a world, not dialogue trees in a database.",
+      "While the industry focused on making characters look real, I focused on making them feel real. By combining neuropsychology, reinforcement learning, and generative AI, we created NPCs that can form relationships, hold grudges, adapt their personalities, and evolve through interaction.",
     tech: ["Python", "Godot", "LLM", "Chroma DB", "RLHF"],
     github: "https://github.com/kavina-a",
     live: null,
-    img: M(7),
+    img: "/projects/AXIS/image.png",
+    gallery: [
+      "/projects/AXIS/image.png",
+      "/projects/AXIS/image copy.png",
+      "/projects/AXIS/image copy 2.png",
+      "/projects/AXIS/image copy 3.png",
+      "/projects/AXIS/THESIS  -0-1-.jpg",
+    ],
     accent: "#ff6b6b",
   },
   {

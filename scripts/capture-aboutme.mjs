@@ -42,7 +42,7 @@ const scrollTo = (y) =>
   }, y);
 
 const sectionTop = await page.evaluate(() => {
-  const el = document.getElementById("about-me");
+  const el = document.getElementById("about");
   return el.getBoundingClientRect().top + window.scrollY;
 });
 

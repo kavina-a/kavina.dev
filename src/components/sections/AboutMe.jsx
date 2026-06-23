@@ -88,7 +88,7 @@ export default function AboutMe() {
   }, []);
 
   return (
-    <section className="section aboutme" id="about-me" ref={sectionRef}>
+    <section className="section aboutme" id="about" ref={sectionRef}>
       <div className="aboutme__sheet" ref={sheetRef} aria-hidden />
 
       <div className="aboutme__content" ref={contentRef}>

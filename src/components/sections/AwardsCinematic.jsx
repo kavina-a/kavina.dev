@@ -180,20 +180,16 @@ export default function AwardsCinematic() {
         <div className="awards-cinematic__reveal">
           <div ref={revealBgRef} className="awards-cinematic__reveal-bg" />
           <div className="awards-cinematic__reveal-content">
-            <p ref={labelRef} className="awards-cinematic__label">Tech Stack</p>
             <h2 ref={headingRef} className="awards-cinematic__heading">
               <span className="ac-line">
                 <span className="ac-word">The</span>{" "}
-                <span className="ac-word">right</span>{" "}
-                <span className="ac-word">tools,</span>{" "}
-                <span className="ac-word">chosen</span>{" "}
-                <span className="ac-word">with</span>
+                <span className="ac-word">stack</span>{" "}
+                <span className="ac-word">behind,</span>{" "}
+             
               </span>
               <span className="ac-line">
-                <span className="ac-word">intent</span>{" "}
-                <span className="ac-word">—</span>{" "}
-                <span className="ac-word">not</span>{" "}
-                <span className="ac-word">convention.</span>
+              <span className="ac-word">the</span>{" "}
+              <span className="ac-word">stack.</span>
               </span>
             </h2>
             <ul ref={listRef} className="awards-cinematic__list">

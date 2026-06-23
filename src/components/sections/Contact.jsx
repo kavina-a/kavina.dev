@@ -93,8 +93,9 @@ export default function Contact() {
 
       <div className="bot">
         <p className="bot__intro">
-          👋 Hey there! I'm the Kavina Bot. Share a few details and I'll send this
-          straight to my inbox. <kbd>Hit Enter</kbd>
+          Hey, I&apos;m probably not online right now.
+          <br />
+          Leave a message and I&apos;ll get back to you soon. <kbd>Hit Enter</kbd>
         </p>
 
         {CONTACT_STEPS.slice(0, step).map((s) => (

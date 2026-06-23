@@ -9,11 +9,9 @@
 //      resolves to centre as the frame reaches the middle of the screen, so
 //      scrolling "moves into" the person.
 //
-//   2. LIQUID HOVER  — a low-res ping-pong velocity field. While the pointer
-//      is over the frame we splat its motion into the field (Gaussian blobs of
-//      velocity); the field decays every frame. The display pass samples the
-//      image with UVs displaced by that field + a velocity-driven RGB split,
-//      so the image melts/drags under the cursor and slowly recovers on leave.
+//   2. LIQUID HOVER  — on hover the whole frame warps with sideways waves,
+//      shear, and drag-field displacement (not a local face-warp). Pointer
+//      motion injects velocity into a ping-pong field for ink trails.
 //
 // Same fluid-cursor family as the hero (PaintInvert) but stripped to a decaying
 // drag map — no pressure solve needed for a displacement look, so it's cheap
@@ -64,9 +62,11 @@ const DISPLAY_FRAG = /* glsl */ `
   uniform float uZoom;
   uniform float uParallax;
   uniform float uDisp;
-  uniform float uCA;     // kept for uniform compat, intentionally unused
+  uniform float uWave;
+  uniform float uShear;
+  uniform float uCA;
   uniform float uTime;
-  uniform float uHover;  // 0 = idle, 1 = fully hovered (smooth lerp in JS)
+  uniform float uHover;
   varying vec2 vUv;
 
   vec2 cover(vec2 uv){
@@ -81,29 +81,37 @@ const DISPLAY_FRAG = /* glsl */ `
   }
 
   void main(){
-    vec2 flow   = texture2D(uFlow, vUv).xy;
-    float mag   = length(flow);
+    vec2 flow = texture2D(uFlow, vUv).xy;
+    float mag = length(flow);
+    float h   = uHover;
 
-    vec2 baseUv = cover(vUv);
-    // Tiny UV shift keeps the fluid motion tactile without warping the face
-    vec2 disp   = flow * uDisp;
-    vec4 img    = texture2D(uImage, baseUv + disp);
+    // Whole-frame warp — sideways waves + shear so the image melts globally,
+    // not just a local "face filter" blob under the cursor.
+    vec2 warped = vUv;
+    float t = uTime;
+    warped.x += sin(vUv.y * 6.5 + t * 2.6) * uWave * (0.65 + mag * 1.4) * h;
+    warped.y += cos(vUv.x * 5.2 + t * 2.1) * uWave * (0.55 + mag * 1.2) * h;
+    warped.x += (vUv.y - 0.5) * sin(t * 1.7 + vUv.x * 3.0) * uShear * h;
+    warped.y += (vUv.x - 0.5) * cos(t * 1.4 + vUv.y * 2.6) * uShear * 0.75 * h;
 
-    // ── Shadow-fluid hover state ─────────────────────────────────────────
-    // 1. Desaturate + dim the whole frame (the "veil" that rolls in on entry)
-    float luma  = dot(img.rgb, vec3(0.2126, 0.7152, 0.0722));
-    vec3  moody = img.rgb * 0.22 + vec3(luma * 0.035);  // near-dark, faint colour
+    vec2 baseUv = cover(warped);
+    vec2 disp   = flow * uDisp * (0.35 + 0.65 * h);
 
-    // 2. Where the cursor has moved, push to deep near-black ink
-    //    The flow field decays slowly so the trails persist like wet ink
-    vec3  ink   = vec3(0.018, 0.012, 0.028);  // near-black with a purple warmth
-    float trail = smoothstep(0.0, 0.45, mag);
-    vec3  hov   = mix(moody, ink, trail * 0.92);
+    // RGB split on strong hover / drag — reads as full-image glitch, not face warp
+    float caAmt = uCA * h * (0.35 + mag * 2.5);
+    vec2 ca     = vec2(caAmt, caAmt * 0.35);
+    vec3 col;
+    col.r = texture2D(uImage, baseUv + disp + ca).r;
+    col.g = texture2D(uImage, baseUv + disp).g;
+    col.b = texture2D(uImage, baseUv + disp - ca).b;
 
-    // 3. Cross-fade: full colour ↔ shadow state, driven by uHover lerp
-    vec3  result = mix(img.rgb, hov, uHover);
+    float luma  = dot(col, vec3(0.2126, 0.7152, 0.0722));
+    vec3  moody = col * 0.22 + vec3(luma * 0.035);
+    vec3  ink   = vec3(0.018, 0.012, 0.028);
+    float trail = smoothstep(0.0, 0.38, mag);
+    vec3  hov   = mix(moody, ink, trail * 0.88);
 
-    gl_FragColor = vec4(result, 1.0);
+    gl_FragColor = vec4(mix(col, hov, h), 1.0);
   }
 `;
 
@@ -112,15 +120,17 @@ export class LiquidImage {
     this.canvas = canvas;
     this.config = {
       flowResolution: 196,
-      dissipation: 0.965,  // slow decay → trails linger like wet ink
-      force: 20.0,         // strong injection → dramatic swirls
-      splatRadius: 0.030,  // wider gaussian blobs → painterly strokes
-      disp: 0.04,          // tiny UV shift — feels fluid without warping face
-      ca: 0.0,
+      dissipation: 0.952,
+      force: 32.0,
+      splatRadius: 0.045,
+      disp: 0.22,
+      wave: 0.11,
+      shear: 0.14,
+      ca: 0.022,
       zoom: 1.16,
       parallaxAmount: 0.12,
       parallaxDir: 1,
-      pointerEase: 0.14,
+      pointerEase: 0.18,
       ...config,
     };
 
@@ -238,6 +248,8 @@ export class LiquidImage {
         uZoom: { value: this.config.zoom },
         uParallax: { value: 0 },
         uDisp: { value: this.config.disp },
+        uWave: { value: this.config.wave },
+        uShear: { value: this.config.shear },
         uCA: { value: this.config.ca },
         uTime: { value: 0 },
         uHover: { value: 0 },
@@ -350,9 +362,9 @@ export class LiquidImage {
 
       this._updateParallax();
 
-      // Smooth hover veil transition (~1.2 s in, ~1.8 s out)
-      const hEaseIn  = 0.045;
-      const hEaseOut = 0.030;
+      // Smooth hover veil transition — snap in faster for a dramatic whole-frame warp
+      const hEaseIn  = 0.085;
+      const hEaseOut = 0.028;
       const hEase = this._hoverTarget > this._hoverProgress ? hEaseIn : hEaseOut;
       this._hoverProgress += (this._hoverTarget - this._hoverProgress) * hEase;
       this.material.display.uniforms.uHover.value = this._hoverProgress;

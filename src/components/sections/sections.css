@@ -74,7 +74,7 @@
   z-index: 2;
   display: grid;
   /* Col 1: company identity  Col 2: role title  Col 3: blurb */
-  grid-template-columns: minmax(140px, 180px) 1fr minmax(160px, 340px);
+  grid-template-columns: minmax(160px, 210px) 1fr minmax(160px, 340px);
   align-items: center;
   gap: clamp(24px, 4vw, 56px);
   padding: clamp(32px, 4.5vw, 60px) 8px;
@@ -88,39 +88,44 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  justify-content: center;
   gap: 10px;
   min-width: 0;
+  min-height: clamp(52px, 6.5vw, 72px);
 }
 
 .work-list__logo {
-  height: clamp(40px, 5vw, 56px);
+  height: clamp(52px, 6.5vw, 72px);
   width: auto;
-  max-width: 148px;
+  max-width: 188px;
   object-fit: contain;
+  object-position: left center;
   display: block;
   border-radius: 4px;
-  transition: opacity 0.35s ease, box-shadow 0.35s ease;
+  transform-origin: left center;
+  transition:
+    opacity 0.35s ease,
+    transform 0.45s var(--ease-power3-out),
+    filter 0.35s ease;
 }
 
 .work-list__item:not([data-scroll-active="true"]):not([data-hovered="true"]) .work-list__logo {
-  opacity: 0.82;
+  opacity: 1;
+  filter: brightness(1.14) contrast(1.06);
 }
 
 .work-list__item[data-scroll-active="true"] .work-list__logo,
 .work-list__item[data-hovered="true"] .work-list__logo {
   opacity: 1;
-  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.1);
-}
-
-.work-list__date {
-  margin-top: 2px;
+  filter: none;
+  transform: scale(1.05);
 }
 
 /* Company name — shares .work-list__name for GSAP colour animation */
 .work-list__company-label {
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
+  font-size: clamp(0.82rem, 1.1vw, 0.95rem);
+  font-weight: 700;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   white-space: nowrap;
   overflow: hidden;
@@ -135,7 +140,55 @@
   white-space: nowrap;
 }
 
-/* ── Col 2: Role title ── */
+/* ── Col 2: timeline + role ── */
+.work-list__role-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(10px, 1.4vh, 16px);
+  min-width: 0;
+}
+
+.work-list__when {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.55em 0.65em;
+  font-size: clamp(0.72rem, 1.05vw, 0.88rem);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.92);
+  transition: color 0.35s var(--ease-power3-out);
+}
+
+.work-list__item[data-scroll-active="true"] .work-list__when,
+.work-list__item[data-hovered="true"] .work-list__when {
+  color: #0a0a0a;
+}
+
+.work-list__when-start,
+.work-list__when-end {
+  white-space: nowrap;
+}
+
+.work-list__when-end {
+  font-weight: 500;
+  letter-spacing: 0.18em;
+}
+
+/* Thin rule between range ends — reads like an editorial tick, not a chip */
+.work-list__when-tick {
+  flex: 0 0 clamp(18px, 2.4vw, 32px);
+  height: 1px;
+  background: currentColor;
+  opacity: 0.55;
+  transform: translateY(0.05em);
+}
+
+/* ── Role title ── */
 .work-list__role {
   font-size: clamp(1.1rem, 2.2vw, 2.2rem);
   font-weight: 600;
