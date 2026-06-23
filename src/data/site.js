@@ -121,34 +121,6 @@ export const TECHSTACK = [
 // ─── Projects ──────────────────────────────────────────────────────────────
 export const PROJECTS = [
   {
-    id: "voice-ai",
-    title: "VOICE AI AGENTS",
-    subtitle: "Agents that actually pick up",
-    year: "2025",
-    category: "Voice × AI",
-    description:
-      "Sub-200ms latency — fast enough to feel human. Scheduled the calls, scored the voices, and shipped to prod with logs that actually tell you something went wrong.",
-    tech: ["Python", "LangChain", "OpenAI Realtime", "FastAPI", "WebRTC"],
-    github: "https://github.com/kavina-a",
-    live: null,
-    img: M(2),
-    accent: "#6affb4",
-  },
-  {
-    id: "multi-agent",
-    title: "MULTI-AGENT SYSTEMS",
-    subtitle: "Agents that hand things off",
-    year: "2025",
-    category: "Agent Platform",
-    description:
-      "Agents that plan, sub-delegate, and recover when they're wrong. Built on LangGraph with state machines that know when to ask for help instead of hallucinating an answer.",
-    tech: ["LangGraph", "Python", "Redis", "Docker", "GPT-4o"],
-    github: "https://github.com/kavina-a",
-    live: null,
-    img: M(5),
-    accent: "#a78bfa",
-  },
-  {
     id: "axis",
     title: "AXIS",
     subtitle: "NPCs that feel real, not just look real",
@@ -156,7 +128,7 @@ export const PROJECTS = [
     category: "Game × Research",
     description:
       "While the industry focused on making characters look real, I focused on making them feel real. By combining neuropsychology, reinforcement learning, and generative AI, we created NPCs that can form relationships, hold grudges, adapt their personalities, and evolve through interaction.",
-    tech: ["Python", "Godot", "LLM", "Chroma DB", "RLHF"],
+    tech: ["Python", "OpenAI", "LLM", "Chroma DB", "Unity"],
     github: "https://github.com/kavina-a",
     live: null,
     img: "/projects/AXIS/image.png",
@@ -169,34 +141,17 @@ export const PROJECTS = [
     ],
     accent: "#ff6b6b",
   },
-  {
-    id: "mathease",
-    title: "MATHEASE PLATFORM",
-    subtitle: "Tutoring that meets you where you are",
-    year: "2024",
-    category: "EdTech · Product",
-    description:
-      "Problem trees built from what you already know, not what a curriculum assumed you would. Adaptive in the actual sense — it changes path when you get it wrong, not just when you ask.",
-    tech: ["Next.js", "TypeScript", "PostgreSQL", "AWS", "Tailwind"],
-    github: "https://github.com/kavina-a",
-    live: null,
-    img: M(3),
-    accent: "#fbbf24",
-  },
 ];
 
 export const CONTACT_EMAIL = "hi@kavina.me";
 
 export const CONTACT_STEPS = [
-  { id: "name", label: "Hi, my name is", type: "text", placeholder: "your name" },
-  { id: "email", label: "You can email me at", type: "email", placeholder: "you@email.com" },
+  { id: "name", label: "What's your name?", type: "text", placeholder: "your name" },
+  { id: "email", label: "Where can I reply?", type: "email", placeholder: "you@email.com" },
   {
-    id: "project", label: "My project is a", type: "chips",
-    options: ["website development", "mobile app", "e-commerce", "2D / 3D", "product design", "immersive experience", "brand & visual identity", "motion design", "installation / activation"],
+    id: "message",
+    label: "What's this regarding?",
+    type: "textarea",
+    placeholder: "collab, a question, just saying hi…",
   },
-  {
-    id: "budget", label: "My budget range is between", type: "chips",
-    options: ["up to 5k", "5k to 20k", "20 to 50k", "50k to 100k", "over 100k"],
-  },
-  { id: "notes", label: "Additional note", type: "textarea", placeholder: "tell me more…" },
 ];

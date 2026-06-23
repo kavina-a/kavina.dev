@@ -4,11 +4,9 @@ export function formatContactMessage(answers) {
   return [
     `Name: ${answers.name || "—"}`,
     `Reply-to: ${answers.email || "—"}`,
-    `Project type: ${answers.project || "—"}`,
-    `Budget: ${answers.budget || "—"}`,
     "",
-    "Notes:",
-    answers.notes?.trim() || "—",
+    "Message:",
+    answers.message?.trim() || "—",
   ].join("\n");
 }
 
@@ -17,7 +15,7 @@ export function formatContactMessage(answers) {
  * is set. Otherwise opens the visitor's mail app with a pre-filled draft.
  */
 export async function sendContactEmail(answers) {
-  const subject = `Portfolio inquiry — ${answers.name || "New contact"}`;
+  const subject = `Message from ${answers.name || "kavina.me"}`;
   const message = formatContactMessage(answers);
   const accessKey = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY;
 

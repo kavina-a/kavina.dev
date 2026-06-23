@@ -24,6 +24,9 @@ export default function Contact() {
   const validateStep = (value) => {
     const v = (value ?? answers[current.id] ?? "").trim();
 
+    if (current.type === "textarea" && current.id === "message" && !v) {
+      return "Write a short message before sending.";
+    }
     if (current.type === "textarea") return true;
     if (!v) return "Please fill this in before continuing.";
 

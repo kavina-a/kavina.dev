@@ -65,26 +65,18 @@ const HOLD  = 1.5;  // timeline seconds each project is fully visible
 const TRANS = 1.0;  // timeline seconds each transition takes
 const N     = PROJECTS.length; // 4
 
-// Transition start times in the timeline
-const TS = [0, 1, 2].map(
-  (i) => HOLD + i * (HOLD + TRANS)
-);
-// TS[0] = 1.5  (1→2)
-// TS[1] = 4.0  (2→3)
-// TS[2] = 6.5  (3→4)
+const TOTAL_DURATION = N * HOLD + Math.max(0, N - 1) * TRANS;
 
-const TOTAL_DURATION = N * HOLD + (N - 1) * TRANS; // 9.0
+const TS = Array.from({ length: Math.max(0, N - 1) }, (_, i) => HOLD + i * (HOLD + TRANS));
 
-// Active project thresholds in scroll progress (0→1)
-// Switch project at the midpoint of each transition
 const THRESHOLDS = TS.map((t) => (t + TRANS * 0.5) / TOTAL_DURATION);
-// THRESHOLDS ≈ [0.222, 0.500, 0.778]
 
 const getActiveIndex = (progress) => {
-  if (progress < THRESHOLDS[0]) return 0;
-  if (progress < THRESHOLDS[1]) return 1;
-  if (progress < THRESHOLDS[2]) return 2;
-  return 3;
+  if (N <= 1) return 0;
+  for (let i = 0; i < THRESHOLDS.length; i++) {
+    if (progress < THRESHOLDS[i]) return i;
+  }
+  return N - 1;
 };
 
 // Organic float params per card (avoids mechanical uniformity)
@@ -132,25 +124,30 @@ export default function ProjectsShowcase() {
       gsap.set(titles[i], { opacity: 0.13, scale: 0.85 });
     }
 
-    if (fill)    gsap.set(fill,    { scaleX: 1 / N, transformOrigin: "left center" });
+    if (fill)    gsap.set(fill,    { scaleX: 1, transformOrigin: "left center" });
     if (counter) gsap.set(counter, { innerText: 1 });
 
     // ── Idle float animations ────────────────────────────────────
     const floatTls = floats.map((el, i) => {
+      const params = FLOAT_PARAMS[i % FLOAT_PARAMS.length];
       const tl = gsap.timeline({ repeat: -1, yoyo: true });
       tl.to(el, {
-        y: -FLOAT_PARAMS[i].amt,
-        duration: FLOAT_PARAMS[i].dur,
+        y: -params.amt,
+        duration: params.dur,
         ease: "sine.inOut",
       });
       if (i !== 0) tl.pause();
       return tl;
     });
 
-    // ── Master GSAP timeline (scrubbed by ScrollTrigger) ─────────
-    const tl = gsap.timeline({ defaults: { ease: "none" } });
+    let st = null;
+    let tl = null;
 
-    const buildTransition = (from, to, tStart) => {
+    if (N > 1) {
+      // ── Master GSAP timeline (scrubbed by ScrollTrigger) ─────────
+      tl = gsap.timeline({ defaults: { ease: "none" } });
+
+      const buildTransition = (from, to, tStart) => {
       const isForward = to > from;
       const exitRY    = isForward ? -16 : 16;
       const exitRX    = isForward ?   7 : -7;
@@ -231,36 +228,35 @@ export default function ProjectsShowcase() {
       }
     };
 
-    // Build all 3 transitions
-    for (let i = 0; i < N - 1; i++) {
-      buildTransition(i, i + 1, TS[i]);
+      for (let i = 0; i < N - 1; i++) {
+        buildTransition(i, i + 1, TS[i]);
+      }
+
+      const scrollEnd = `+=${Math.round(TOTAL_DURATION * 65)}%`;
+
+      st = ScrollTrigger.create({
+        trigger:      section,
+        start:        "top top",
+        end:          scrollEnd,
+        pin:          true,
+        anticipatePin: 1,
+        scrub:        1.8,
+        animation:    tl,
+        onUpdate(self) {
+          activeRef.current = getActiveIndex(self.progress);
+          floatTls.forEach((ftl, i) => {
+            if (i === activeRef.current) {
+              if (ftl.paused()) ftl.resume();
+            } else if (!ftl.paused()) {
+              ftl.pause();
+            }
+          });
+        },
+      });
+    } else {
+      activeRef.current = 0;
+      floatTls[0]?.resume();
     }
-
-    // ── ScrollTrigger — pins section + scrubs timeline ───────────
-    const scrollEnd = `+=${Math.round(TOTAL_DURATION * 65)}%`; // ≈ 585vh
-
-    const st = ScrollTrigger.create({
-      trigger:      section,
-      start:        "top top",
-      end:          scrollEnd,
-      pin:          true,
-      anticipatePin: 1,
-      scrub:        1.8,
-      animation:    tl,
-      onUpdate(self) {
-        // Track active index for parallax target
-        activeRef.current = getActiveIndex(self.progress);
-
-        // Sync float timelines: only active card floats
-        floatTls.forEach((ftl, i) => {
-          if (i === activeRef.current) {
-            if (ftl.paused()) ftl.resume();
-          } else {
-            if (!ftl.paused()) ftl.pause();
-          }
-        });
-      },
-    });
 
     // ── Mouse parallax (rAF lerp) ───────────────────────────────
     let mouseX = 0, mouseY = 0, lerpX = 0, lerpY = 0, rafId;
@@ -390,8 +386,8 @@ export default function ProjectsShowcase() {
       section.removeEventListener("mouseleave", onMouseLeave);
       cancelAnimationFrame(rafId);
       floatTls.forEach((t) => t.kill());
-      st.kill();
-      tl.kill();
+      st?.kill();
+      tl?.kill();
     };
   }, []);
 
@@ -425,12 +421,14 @@ export default function ProjectsShowcase() {
         </nav>
 
         <div className="ps__meta">
-          <div className="ps__progress-track" aria-hidden="true">
-            <div ref={progressFillRef} className="ps__progress-fill" />
-          </div>
+          {N > 1 && (
+            <div className="ps__progress-track" aria-hidden="true">
+              <div ref={progressFillRef} className="ps__progress-fill" />
+            </div>
+          )}
           <p className="ps__counter" aria-live="polite" aria-atomic="true">
             <span ref={counterRef} className="ps__counter-n">1</span>
-            <span className="ps__counter-sep"> / {N}</span>
+            {N > 1 && <span className="ps__counter-sep"> / {N}</span>}
           </p>
         </div>
       </div>
@@ -529,9 +527,11 @@ export default function ProjectsShowcase() {
           ))}
         </div>
 
-        <p className="ps__hint" aria-hidden="true">
-          <span className="ps__hint-arrow">↓</span> Scroll to explore
-        </p>
+        {N > 1 && (
+          <p className="ps__hint" aria-hidden="true">
+            <span className="ps__hint-arrow">↓</span> Scroll to explore
+          </p>
+        )}
       </div>
     </section>
   );
