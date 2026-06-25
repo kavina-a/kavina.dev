@@ -1,4 +1,4 @@
-const MYPICS = [
+export const MYPICS = [
   "/mypics/binara.events-055 2.JPG",
   "/mypics/binara.events-111_Original 2.jpg",
   "/mypics/binara.events-114 3.JPG",

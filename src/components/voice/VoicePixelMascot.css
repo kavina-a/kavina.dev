@@ -1,0 +1,97 @@
+/* ── Pixel mascot launcher ─────────────────────────────────────────────────── */
+
+.voice-agent__zone {
+  position: relative;
+  width: min(260px, 52vw);
+  height: 118px;
+  pointer-events: none;
+}
+
+.voice-agent__mascot {
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  pointer-events: auto;
+  z-index: 1;
+  transition: filter 0.25s;
+}
+
+.voice-agent__mascot:hover {
+  filter: brightness(1.08);
+}
+
+.voice-agent__mascot:focus-visible {
+  outline: 2px solid #6affb4;
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.voice-agent__mascot-sprite {
+  display: block;
+  transform-origin: center bottom;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.voice-agent__mascot-shadow {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 36px;
+  height: 6px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.22);
+  filter: blur(2px);
+  pointer-events: none;
+}
+
+.voice-agent__mascot-badge {
+  position: absolute;
+  top: 4px;
+  right: 2px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #6affb4;
+  box-shadow: 0 0 10px rgba(106, 255, 180, 0.75);
+  animation: voiceMascotPulse 1.4s ease-in-out infinite;
+}
+
+.voice-agent__mascot.is-connecting .voice-agent__mascot-badge {
+  background: #ffd56a;
+  box-shadow: 0 0 10px rgba(255, 213, 106, 0.75);
+}
+
+.voice-agent__mascot-label {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+@keyframes voiceMascotPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.55; transform: scale(0.82); }
+}
+
+@media (max-width: 520px) {
+  .voice-agent__zone {
+    width: min(200px, 58vw);
+    height: 100px;
+  }
+
+  .voice-agent__mascot-label {
+    font-size: 0.58rem;
+  }
+}

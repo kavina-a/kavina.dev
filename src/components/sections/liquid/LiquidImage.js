@@ -59,11 +59,11 @@ const DISPLAY_FRAG = /* glsl */ `
   uniform sampler2D uFlow;
   uniform vec2  uResolution;
   uniform vec2  uImageRes;
+  uniform vec2  uFlowDir;
   uniform float uZoom;
   uniform float uParallax;
   uniform float uDisp;
   uniform float uWave;
-  uniform float uShear;
   uniform float uCA;
   uniform float uTime;
   uniform float uHover;
@@ -82,36 +82,33 @@ const DISPLAY_FRAG = /* glsl */ `
 
   void main(){
     vec2 flow = texture2D(uFlow, vUv).xy;
-    float mag = length(flow);
-    float h   = uHover;
+    vec2 dir  = normalize(uFlowDir);
+    float flowAlong = dot(flow, dir);
+    float trailMag  = abs(flowAlong);
+    float h = uHover;
 
-    // Whole-frame warp — sideways waves + shear so the image melts globally,
-    // not just a local "face filter" blob under the cursor.
+    // Single-direction smear — the image pulls along one axis, not a radial melt.
     vec2 warped = vUv;
     float t = uTime;
-    warped.x += sin(vUv.y * 6.5 + t * 2.6) * uWave * (0.65 + mag * 1.4) * h;
-    warped.y += cos(vUv.x * 5.2 + t * 2.1) * uWave * (0.55 + mag * 1.2) * h;
-    warped.x += (vUv.y - 0.5) * sin(t * 1.7 + vUv.x * 3.0) * uShear * h;
-    warped.y += (vUv.x - 0.5) * cos(t * 1.4 + vUv.y * 2.6) * uShear * 0.75 * h;
+    warped += dir * sin(dot(vUv, dir) * 7.0 + t * 2.4) * uWave * (0.35 + trailMag * 2.2) * h;
 
     vec2 baseUv = cover(warped);
-    vec2 disp   = flow * uDisp * (0.35 + 0.65 * h);
+    vec2 disp   = dir * flowAlong * uDisp * (0.45 + 0.55 * h);
 
-    // RGB split on strong hover / drag — reads as full-image glitch, not face warp
-    float caAmt = uCA * h * (0.35 + mag * 2.5);
-    vec2 ca     = vec2(caAmt, caAmt * 0.35);
+    // Chromatic split along the same flow axis
+    float caAmt = uCA * (0.25 + trailMag * 3.2) * h;
+    vec2 ca = dir * caAmt;
     vec3 col;
     col.r = texture2D(uImage, baseUv + disp + ca).r;
     col.g = texture2D(uImage, baseUv + disp).g;
     col.b = texture2D(uImage, baseUv + disp - ca).b;
 
-    float luma  = dot(col, vec3(0.2126, 0.7152, 0.0722));
-    vec3  moody = col * 0.22 + vec3(luma * 0.035);
-    vec3  ink   = vec3(0.018, 0.012, 0.028);
-    float trail = smoothstep(0.0, 0.38, mag);
-    vec3  hov   = mix(moody, ink, trail * 0.88);
+    // Darken only inside the ink trail — base image stays untouched elsewhere.
+    float trail = smoothstep(0.0, 0.30, trailMag);
+    vec3 ink = vec3(0.003, 0.002, 0.006);
+    col = mix(col, ink, trail * 0.96);
 
-    gl_FragColor = vec4(mix(col, hov, h), 1.0);
+    gl_FragColor = vec4(col, 1.0);
   }
 `;
 
@@ -120,19 +117,22 @@ export class LiquidImage {
     this.canvas = canvas;
     this.config = {
       flowResolution: 196,
-      dissipation: 0.952,
-      force: 32.0,
-      splatRadius: 0.045,
-      disp: 0.22,
-      wave: 0.11,
-      shear: 0.14,
-      ca: 0.022,
+      dissipation: 0.958,
+      force: 36.0,
+      splatRadius: 0.048,
+      disp: 0.26,
+      wave: 0.09,
+      ca: 0.028,
       zoom: 1.16,
       parallaxAmount: 0.12,
       parallaxDir: 1,
+      flowDir: [1, 0.12],
       pointerEase: 0.18,
       ...config,
     };
+    const [fdx, fdy] = this.config.flowDir;
+    const fdLen = Math.hypot(fdx, fdy) || 1;
+    this._flowNorm = { x: fdx / fdLen, y: fdy / fdLen };
 
     this._raf = 0;
     this._disposed = false;
@@ -245,11 +245,11 @@ export class LiquidImage {
         uFlow: { value: null },
         uResolution: { value: new THREE.Vector2(this.width, this.height) },
         uImageRes: { value: new THREE.Vector2(1, 1) },
+        uFlowDir: { value: new THREE.Vector2(this._flowNorm.x, this._flowNorm.y) },
         uZoom: { value: this.config.zoom },
         uParallax: { value: 0 },
         uDisp: { value: this.config.disp },
         uWave: { value: this.config.wave },
-        uShear: { value: this.config.shear },
         uCA: { value: this.config.ca },
         uTime: { value: 0 },
         uHover: { value: 0 },
@@ -388,14 +388,18 @@ export class LiquidImage {
 
         if (dist > 0.0008) {
           const force = this.config.force;
+          const { x: nx, y: ny } = this._flowNorm;
+          const proj = dx * nx + dy * ny;
+          const vx = (nx * proj * 1.55 + (dx - nx * proj) * 0.18) * force;
+          const vy = (ny * proj * 1.55 + (dy - ny * proj) * 0.18) * force;
           const steps = Math.min(8, Math.max(1, Math.floor(dist / 0.01)));
           for (let i = 1; i <= steps; i++) {
             const f = i / steps;
             this._splat(
               this.smooth.px + dx * f,
               this.smooth.py + dy * f,
-              dx * force,
-              dy * force
+              vx,
+              vy
             );
           }
         }

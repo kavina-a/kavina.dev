@@ -8,6 +8,7 @@ import {
 } from "@elevenlabs/react";
 import { CLIENT_TOOL_NAME } from "../../data/voiceAgent";
 import { sendVoiceLead } from "../../lib/sendVoiceLead";
+import VoicePixelMascot from "./VoicePixelMascot";
 import "./VoiceAgent.css";
 
 const AGENT_ID = import.meta.env.VITE_ELEVENLABS_AGENT_ID;
@@ -126,24 +127,22 @@ function VoiceAgentPanel({ onClose }) {
 
 function VoiceAgentLauncher() {
   const { status } = useConversationStatus();
+  const { isSpeaking } = useConversationMode();
   const [open, setOpen] = useState(false);
   const connected = status === "connected";
+  const connecting = status === "connecting";
 
   return (
     <div className="voice-agent">
       {open && <VoiceAgentPanel onClose={() => setOpen(false)} />}
 
-      <button
-        type="button"
-        className={`voice-agent__launcher ${connected ? "is-live" : ""}`}
+      <VoicePixelMascot
+        open={open}
+        connected={connected}
+        connecting={connecting}
+        isSpeaking={isSpeaking}
         onClick={() => setOpen((v) => !v)}
-        aria-expanded={open}
-        aria-label={open ? "Close voice agent" : "Open voice agent"}
-        data-cursor
-      >
-        <span className="voice-agent__launcher-dot" aria-hidden="true" />
-        {connected ? "On call" : "Talk to Kavina's agent"}
-      </button>
+      />
     </div>
   );
 }
