@@ -34,20 +34,26 @@ export default function PaintInvert() {
 
   return (
     <section className="hero">
-      <canvas ref={canvasRef} className="hero__canvas" />
+      <div className="hero__viewport">
+        <canvas ref={canvasRef} className="hero__canvas" />
 
-      <div className="hero__content">
-        <h1 className="hero__title">
-          KAVINA
-          <span className="hero__role">(AI/ML ENGINEER)</span><br />
-          ALAHAPPERUMA
-        </h1>
+        <div className="hero__content">
+          <div className="hero__stack">
+            <h1 className="hero__title">
+              <span className="hero__line">KAVINA</span>
+              <span className="hero__role">(AI/ML ENGINEER)</span>
+              <span className="hero__line hero__line--surname">
+                ALAHAP<br className="hero__break" aria-hidden="true" />
+                PERUMA
+              </span>
+            </h1>
 
-        <p className="hero__tag">
-          the best way to predict the future is to implement it.
-        </p>
+            <p className="hero__tag">
+              the best way to predict the future is to implement it.
+            </p>
+          </div>
+        </div>
       </div>
-
     </section>
   );
 }

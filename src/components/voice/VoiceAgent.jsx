@@ -35,17 +35,10 @@ function VoiceAgentPanel({ onClose }) {
   const connected = status === "connected";
   const connecting = status === "connecting";
 
-  const statusLabel = useMemo(() => {
-    if (connecting) return "Connecting…";
-    if (!connected) return "Pick up";
-    if (isSpeaking) return "Speaking";
-    return "Listening";
-  }, [connected, connecting, isSpeaking]);
-
   const hint = useMemo(() => {
     if (connecting) return "Getting the line ready — allow mic access if prompted.";
     if (!connected) {
-      return "Ask about Kavina's work. If you want something built, the agent will connect you.";
+      return "Ask about Kavina's work. If you want something built, KAI will connect you.";
     }
     if (isSpeaking) return "Hang on — I'm talking.";
     return "Your turn. Ask anything, or say you want to hire Kavina for a project.";
@@ -84,9 +77,7 @@ function VoiceAgentPanel({ onClose }) {
   };
 
   return (
-    <div className="voice-agent__panel" role="dialog" aria-label="Voice agent">
-      <p className="voice-agent__label">Voice layer</p>
-      <p className="voice-agent__status">{statusLabel}</p>
+    <div className="voice-agent__panel" role="dialog">
       <p className="voice-agent__hint">{hint}</p>
 
       <Waveform active={connected && (isSpeaking || !isMuted)} />
@@ -133,9 +124,7 @@ function VoiceAgentLauncher() {
   const connecting = status === "connecting";
 
   return (
-    <div className="voice-agent">
-      {open && <VoiceAgentPanel onClose={() => setOpen(false)} />}
-
+    <>
       <VoicePixelMascot
         open={open}
         connected={connected}
@@ -143,7 +132,13 @@ function VoiceAgentLauncher() {
         isSpeaking={isSpeaking}
         onClick={() => setOpen((v) => !v)}
       />
-    </div>
+
+      {open && (
+        <div className="voice-agent">
+          <VoiceAgentPanel onClose={() => setOpen(false)} />
+        </div>
+      )}
+    </>
   );
 }
 

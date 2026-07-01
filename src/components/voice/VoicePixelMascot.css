@@ -1,10 +1,11 @@
-/* ── Pixel mascot launcher ─────────────────────────────────────────────────── */
+/* ── KAI — full-viewport floating mascot ─────────────────────────────────── */
 
 .voice-agent__zone {
-  position: relative;
-  width: min(260px, 52vw);
-  height: 118px;
+  position: fixed;
+  inset: 0;
+  z-index: 120;
   pointer-events: none;
+  overflow: hidden;
 }
 
 .voice-agent__mascot {
@@ -17,17 +18,23 @@
   cursor: pointer;
   pointer-events: auto;
   z-index: 1;
+  will-change: transform;
   transition: filter 0.25s;
 }
 
 .voice-agent__mascot:hover {
-  filter: brightness(1.08);
+  filter: brightness(1.1) drop-shadow(0 0 18px rgba(106, 255, 180, 0.22));
 }
 
 .voice-agent__mascot:focus-visible {
   outline: 2px solid #6affb4;
-  outline-offset: 4px;
-  border-radius: 4px;
+  outline-offset: 6px;
+  border-radius: 6px;
+}
+
+.voice-agent__mascot-bob {
+  transform-origin: center bottom;
+  will-change: transform;
 }
 
 .voice-agent__mascot-sprite {
@@ -40,20 +47,90 @@
 .voice-agent__mascot-shadow {
   position: absolute;
   left: 50%;
-  bottom: 0;
-  width: 36px;
-  height: 6px;
+  bottom: -2px;
+  width: 42px;
+  height: 7px;
   transform: translateX(-50%);
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.22);
-  filter: blur(2px);
+  background: rgba(0, 0, 0, 0.28);
+  filter: blur(3px);
   pointer-events: none;
+  transition: opacity 0.3s, transform 0.3s;
 }
+
+.voice-agent__mascot.is-chatting .voice-agent__mascot-shadow {
+  opacity: 0.55;
+  transform: translateX(-50%) scale(0.88);
+}
+
+/* ── Speech bubble ───────────────────────────────────────────────────────── */
+
+.voice-agent__bubble {
+  position: absolute;
+  left: 50%;
+  width: max-content;
+  max-width: min(240px, 62vw);
+  padding: 10px 14px 12px;
+  border-radius: 16px;
+  background: rgba(10, 10, 10, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(14px);
+  box-shadow:
+    0 16px 48px rgba(0, 0, 0, 0.42),
+    0 0 0 1px rgba(106, 255, 180, 0.08) inset;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.voice-agent__bubble.is-above {
+  bottom: calc(100% + 14px);
+  transform: translateX(-50%);
+}
+
+.voice-agent__bubble.is-below {
+  top: calc(100% + 14px);
+  transform: translateX(-50%);
+}
+
+.voice-agent__bubble.is-above::after,
+.voice-agent__bubble.is-below::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  transform: translateX(-50%) rotate(45deg);
+  background: rgba(10, 10, 10, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.voice-agent__bubble.is-above::after {
+  bottom: -7px;
+  border-top: none;
+  border-left: none;
+}
+
+.voice-agent__bubble.is-below::after {
+  top: -7px;
+  border-bottom: none;
+  border-right: none;
+}
+
+.voice-agent__bubble-text {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.88);
+  text-wrap: pretty;
+}
+
+/* ── Live badge ──────────────────────────────────────────────────────────── */
 
 .voice-agent__mascot-badge {
   position: absolute;
-  top: 4px;
-  right: 2px;
+  top: 2px;
+  right: 0;
   width: 9px;
   height: 9px;
   border-radius: 50%;
@@ -67,31 +144,35 @@
   box-shadow: 0 0 10px rgba(255, 213, 106, 0.75);
 }
 
-.voice-agent__mascot-label {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  margin: 0;
-  font-size: 0.62rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.45);
-  pointer-events: none;
-  white-space: nowrap;
-}
-
 @keyframes voiceMascotPulse {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.55; transform: scale(0.82); }
 }
 
-@media (max-width: 520px) {
-  .voice-agent__zone {
-    width: min(200px, 58vw);
-    height: 100px;
+@media (max-width: 720px) {
+  .voice-agent__mascot-shadow {
+    width: 34px;
+    height: 6px;
   }
 
-  .voice-agent__mascot-label {
-    font-size: 0.58rem;
+  .voice-agent__mascot-badge {
+    width: 7px;
+    height: 7px;
+  }
+}
+
+@media (max-width: 520px) {
+  .voice-agent__bubble {
+    max-width: min(210px, 74vw);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .voice-agent__mascot-bob {
+    transform: none !important;
+  }
+
+  .voice-agent__mascot-badge {
+    animation: none;
   }
 }

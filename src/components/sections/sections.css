@@ -550,3 +550,70 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* ── 640 px — small tablets / large phones ──────────────────────── */
+@media (max-width: 640px) {
+  .section {
+    padding-left: clamp(16px, 5vw, 24px);
+    padding-right: clamp(16px, 5vw, 24px);
+  }
+
+  /* Reduce vertical padding on work rows */
+  .work-list__item a {
+    padding-top: clamp(20px, 4.5vw, 36px);
+    padding-bottom: clamp(20px, 4.5vw, 36px);
+    gap: 8px;
+  }
+
+  /* Blurb can be smaller at this size — it stacks under role */
+  .work-list__blurb {
+    font-size: clamp(0.78rem, 3vw, 0.88rem);
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  /* Contact header headline tighter on small screens */
+  .contact__header h2 {
+    font-size: clamp(2rem, 10.5vw, 5rem);
+  }
+
+  /* Bot form font: smaller floor on narrow screens */
+  .bot {
+    font-size: clamp(1rem, 4.5vw, 1.4rem);
+  }
+
+  /* Work-grid cards (secondary grid): stack and reduce gap */
+  .work-grid {
+    gap: clamp(24px, 6vw, 48px);
+  }
+}
+
+/* ── 480 px — small phones ──────────────────────────────────────── */
+@media (max-width: 480px) {
+  /* Tags row is noisy on very narrow layouts — hide to reduce clutter */
+  .work-list__tags {
+    display: none;
+  }
+
+  /* Scale logos down a touch on very narrow screens */
+  .work-list__logo {
+    height: clamp(32px, 8.5vw, 52px);
+    max-width: 130px;
+  }
+
+  /* Blurb is a third column on desktop; on phone it just repeats what the
+     role already says — collapse it for cleaner single-column work items */
+  .work-list__blurb {
+    display: none;
+  }
+
+  /* Bot chips: smaller padding on tiny screens */
+  .bot__chips button {
+    padding: 6px 12px;
+    font-size: 0.72em;
+  }
+
+  /* Awards (static grid) → single column on phones */
+  .awards__list {
+    grid-template-columns: 1fr;
+  }
+}

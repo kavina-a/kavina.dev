@@ -75,3 +75,42 @@
     aspect-ratio: 4 / 3;
   }
 }
+
+/* ── Small phones — 2-column grid so 3 images don't stack 1500 px tall ── */
+@media (max-width: 520px) {
+  .photo-burst {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    /* Override flex-wrap from above */
+    flex-wrap: unset;
+  }
+
+  /* Left frame: top-left cell, portrait */
+  .burst-frame--left {
+    grid-column: 1;
+    grid-row: 1;
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    margin-top: 0;
+  }
+
+  /* Center frame: top-right cell, portrait */
+  .burst-frame--center {
+    grid-column: 2;
+    grid-row: 1;
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    margin-top: 0;
+    z-index: auto;
+  }
+
+  /* Right frame: full-width bottom row, landscape */
+  .burst-frame--right {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    margin-top: 0;
+  }
+}

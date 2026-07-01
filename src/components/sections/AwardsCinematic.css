@@ -242,3 +242,45 @@
     width: clamp(70px, 17vw, 98px);
   }
 }
+
+/* ── 640 px — small phones / tablets: refine reveal overlay content ── */
+@media (max-width: 640px) {
+  /* Tighten label + heading spacing */
+  .awards-cinematic__label {
+    font-size: 0.66rem;
+    margin-bottom: 14px;
+  }
+
+  .awards-cinematic__heading {
+    font-size: clamp(1.55rem, 6.5vw, 3rem);
+    margin-bottom: clamp(18px, 3.5vh, 36px);
+  }
+
+  /* Tech item: allow counts to wrap below the name */
+  .awards-cinematic__item {
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    padding: clamp(10px, 2vw, 18px) 0;
+  }
+
+  .awards-cinematic__counts {
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  /* Name font: don't go quite as large on narrow screens */
+  .awards-cinematic__name {
+    font-size: clamp(1.35rem, 5vw, 2.4rem);
+  }
+
+  /* Badge: slightly tighter */
+  .awards-cinematic__badge {
+    font-size: 0.56rem;
+    padding: 3px 6px;
+  }
+
+  /* Reveal overlay: a bit less horizontal padding */
+  .awards-cinematic__reveal {
+    padding: 0 clamp(16px, 4vw, 28px);
+  }
+}

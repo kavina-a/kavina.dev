@@ -68,3 +68,33 @@
     justify-content: flex-start;
   }
 }
+
+/* ── 640 px ───────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .aboutme {
+    padding-top: clamp(90px, 15vh, 150px);
+    padding-bottom: clamp(80px, 14vh, 140px);
+  }
+
+  .aboutme__lead {
+    font-size: clamp(1.55rem, 6.5vw, 2.4rem);
+  }
+
+  .aboutme__body p {
+    font-size: clamp(1rem, 4vw, 1.3rem);
+  }
+}
+
+/* ── 480 px ───────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  /* Two eyebrow spans: allow wrapping instead of overflowing */
+  .aboutme__eyebrow {
+    flex-wrap: wrap;
+    gap: 4px 16px;
+  }
+
+  .aboutme__lead {
+    font-size: clamp(1.45rem, 7vw, 2rem);
+    max-width: none;
+  }
+}

@@ -2,6 +2,13 @@
  * Copy AGENT_SYSTEM_PROMPT into ElevenLabs → Agents → your agent → System prompt.
  * Add CLIENT_TOOL as a Client Tool with the same name and parameters.
  */
+/** Idle lines shown in the speech bubble while wandering the page */
+export const KAI_DIALOGUES = [
+  "Hi I'm KAI ! CLICK ME",
+  "Tap me anytime to ask about Kavina's work.",
+  "Need something built? I'll connect you to Kavina.",
+];
+
 export const CLIENT_TOOL_NAME = "submit_lead_to_kavina";
 
 export const CLIENT_TOOL = {

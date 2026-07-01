@@ -163,6 +163,30 @@
 
 @media (max-width: 720px) {
   .social-sidebar {
-    display: none;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    flex-direction: column-reverse;
+    align-items: center;
+    padding-bottom: max(10px, env(safe-area-inset-bottom));
+  }
+
+  .social-sidebar__links {
+    flex-direction: row;
+    gap: clamp(18px, 6vw, 32px);
+    padding: 10px clamp(20px, 6vw, 36px) 6px;
+  }
+
+  .social-sidebar__link svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  /* Horizontal line along the bottom — mirrors the desktop vertical connector */
+  .social-sidebar__line {
+    width: min(320px, 72vw);
+    height: 1px;
+    margin-top: 0;
+    margin-bottom: 0;
   }
 }

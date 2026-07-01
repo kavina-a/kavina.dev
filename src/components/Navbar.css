@@ -74,14 +74,156 @@
   opacity: 0.6;
 }
 
+/* ── Hamburger button — hidden on desktop ───────────────────────────── */
+.nav__hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5.5px;
+  width: 32px;
+  height: 32px;
+  padding: 4px 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.nav__hamburger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: #fff;
+  border-radius: 2px;
+  transform-origin: center;
+  transition:
+    transform 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.2s ease;
+}
+
+/* Animated X on open */
+.nav__hamburger.is-open span:nth-child(1) {
+  transform: translateY(7.5px) rotate(45deg);
+}
+.nav__hamburger.is-open span:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+.nav__hamburger.is-open span:nth-child(3) {
+  transform: translateY(-7.5px) rotate(-45deg);
+}
+
+/* ── Mobile menu overlay ────────────────────────────────────────────────
+   Sibling to <header>, NOT inside it — keeps it outside the nav's
+   mix-blend-mode:difference stacking context so it renders as a proper
+   dark panel. z-index 199 sits just below the nav bar (200) so the
+   logo + hamburger remain readable on top.                              */
+.nav__mobile-menu {
+  position: fixed;
+  inset: 0;
+  z-index: 199;
+  background: #0a0a0a;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  /* Only visible on mobile; harmless on desktop at opacity 0 */
+}
+
+.nav__mobile-menu.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Link list inside mobile menu */
+.nav__mobile-menu nav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 0 clamp(24px, 6vw, 48px);
+}
+
+.nav__mobile-menu nav a {
+  font-size: clamp(1.8rem, 8vw, 3rem);
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.82);
+  text-decoration: none;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  padding: clamp(14px, 3vh, 22px) 0;
+  width: 100%;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  transition: color 0.2s ease, opacity 0.2s ease;
+  /* Stagger-in animation (active only when overlay is open) */
+  opacity: 0;
+  transform: translateY(14px);
+}
+
+.nav__mobile-menu nav a:first-child {
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.nav__mobile-menu nav a:active,
+.nav__mobile-menu nav a:hover {
+  color: #fff;
+  opacity: 0.55 !important;
+}
+
+/* Stagger-in keyframe */
+@keyframes navLinkIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.nav__mobile-menu.is-open nav a {
+  animation: navLinkIn 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.nav__mobile-menu.is-open nav a:nth-child(1) { animation-delay: 0.06s; }
+.nav__mobile-menu.is-open nav a:nth-child(2) { animation-delay: 0.11s; }
+.nav__mobile-menu.is-open nav a:nth-child(3) { animation-delay: 0.16s; }
+.nav__mobile-menu.is-open nav a:nth-child(4) { animation-delay: 0.21s; }
+.nav__mobile-menu.is-open nav a:nth-child(5) { animation-delay: 0.26s; }
+
+/* Email link at the bottom of the overlay */
+.nav__mobile-email {
+  margin-top: clamp(24px, 4vh, 40px);
+  font-size: 0.72rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.28);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  /* Start hidden so it matches the overlay's closed state */
+  opacity: 0;
+  transform: translateY(14px);
+}
+
+/* Animate in only when overlay is open */
+.nav__mobile-menu.is-open .nav__mobile-email {
+  animation: navLinkIn 0.42s cubic-bezier(0.16, 1, 0.3, 1) 0.32s both;
+}
+
+.nav__mobile-email:hover {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+/* ── Mobile breakpoint ──────────────────────────────────────────────── */
 @media (max-width: 860px) {
   .nav__email {
     display: none;
   }
+  /* All desktop links move into the mobile overlay */
   .nav__links {
-    gap: 14px;
-  }
-  .nav__links a:not(.nav__cta) {
     display: none;
+  }
+  /* Show the hamburger button */
+  .nav__hamburger {
+    display: flex;
   }
 }

@@ -677,6 +677,65 @@
   }
 }
 
+/* ── Small phones (≤ 480 px) ──────────────────────────────────────── */
+@media (max-width: 480px) {
+  /* Tighten the left panel so it doesn't consume too much height */
+  .ps__left {
+    padding: clamp(64px, 11vh, 96px) clamp(16px, 5vw, 24px) 16px;
+  }
+
+  /* Tighten the right panel */
+  .ps__right {
+    padding: 12px clamp(16px, 5vw, 24px) clamp(32px, 5vh, 56px);
+  }
+
+  /* Shrink the card stage so it fits within a small viewport height */
+  .ps__stage {
+    width: clamp(200px, 88vw, 320px);
+    height: clamp(220px, 56vw, 340px);
+  }
+
+  /* Smaller title text */
+  .ps__title-text {
+    font-size: clamp(0.9rem, 4.8vw, 1.5rem);
+  }
+
+  /* Reduce eyebrow margin */
+  .ps__eyebrow {
+    margin-bottom: clamp(16px, 3vh, 28px);
+  }
+
+  /* Shrink progress track */
+  .ps__progress-track {
+    width: clamp(60px, 15vw, 100px);
+  }
+
+  /* Smaller scroll hint */
+  .ps__hint {
+    font-size: 0.56rem;
+    margin-top: 12px;
+  }
+
+  /* Card footer insets */
+  .ps__card-footer {
+    bottom: clamp(14px, 2.5vh, 22px);
+    left: clamp(14px, 4vw, 20px);
+    right: clamp(14px, 4vw, 20px);
+  }
+
+  .ps__card-header {
+    top: clamp(12px, 2vh, 18px);
+    left: clamp(14px, 4vw, 20px);
+    right: clamp(14px, 4vw, 20px);
+  }
+
+  /* Subtitle font size */
+  .ps__card-subtitle {
+    font-size: clamp(0.95rem, 4.5vw, 1.5rem);
+    margin-bottom: 8px;
+  }
+}
+
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .ps__orb,
