@@ -33,7 +33,7 @@ export const FEATURED = [
   {
     id: "fast-track",
     title: "Fast Track Summer Intern",
-    tags: ["JKH · Sysco LABS · Brandix", "Aug 2024"],
+    tags: ["Fast Track Summer Internship", "Aug 2024"],
     blurb: "Three companies, one summer, still finding my desk.",
   },
   {

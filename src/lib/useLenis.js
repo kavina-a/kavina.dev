@@ -24,7 +24,7 @@ export function useLenis({ autoStart = true } = {}) {
       orientation: "vertical",
       gestureOrientation: "vertical",
       smoothWheel: !prefersReduced,
-      smoothTouch: false,
+      syncTouch: false,
       touchMultiplier: 1.8,
       wheelMultiplier: 0.9,
     });

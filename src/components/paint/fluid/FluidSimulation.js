@@ -191,7 +191,6 @@ export class FluidSimulation {
     };
     this._onTouch = (e) => {
       if (!e.touches[0]) return;
-      e.preventDefault();
       const t = e.touches[0];
       const { x, y } = rectXY(t.clientX, t.clientY);
       this.pointer.x = x;
@@ -203,7 +202,9 @@ export class FluidSimulation {
       }
     };
     window.addEventListener("mousemove", this._onMove);
-    window.addEventListener("touchmove", this._onTouch, { passive: false });
+    // Canvas-only, passive — never block native vertical scroll on mobile.
+    this.canvas.addEventListener("touchstart", this._onTouch, { passive: true });
+    this.canvas.addEventListener("touchmove", this._onTouch, { passive: true });
   }
 
   _set(material, uniforms) {
@@ -363,7 +364,8 @@ export class FluidSimulation {
     cancelAnimationFrame(this._raf);
     window.removeEventListener("resize", this._onResize);
     window.removeEventListener("mousemove", this._onMove);
-    window.removeEventListener("touchmove", this._onTouch);
+    this.canvas.removeEventListener("touchstart", this._onTouch);
+    this.canvas.removeEventListener("touchmove", this._onTouch);
     this._disposeTargets();
     Object.values(this.material || {}).forEach((mat) => mat.dispose());
     this.quad.geometry.dispose();

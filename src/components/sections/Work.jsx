@@ -8,6 +8,7 @@ const LOGO_MAP = {
   "ARIMAC":   "/company-logo/arimac.png",
   "AA JAPAN": "/company-logo/aaj.png",
   "TUTOPIYA": "/company-logo/tutopiya.png",
+  "FAST TRACK SUMMER INTERNSHIP": "/company-logo/images (1).jpeg",
 };
 
 function parseDateRange(raw) {
