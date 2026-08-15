@@ -32,11 +32,9 @@
 
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  /* ~9vw inset on each side — columns start 15% toward centre.
-     As Phase 1 zooms columns from 0.85 → 1.35, overflow is clipped
-     and the visual gap closes. */
-  padding: 0 clamp(24px, 9vw, 90px);
+  justify-content: center;
+  gap: clamp(20px, 4.2vw, 64px);
+  padding: 0 clamp(16px, 6vw, 64px);
 }
 
 /* Vertical distance between framed images (rows) inside every column. */
@@ -75,9 +73,8 @@
   will-change: transform;
 }
 
-/* ── Framed certificate card ─────────────────────────────────── */
-/* Mimics a matted fine-art print / award certificate.
-   Wider bottom mat = classic museum-mount proportion. */
+/* ── Framed print ────────────────────────────────────────────── */
+/* Polaroid mat + a little desk-scatter so they don't read as a grid. */
 .awards-frame {
   background: #f0ede6;
   padding: 10px 10px 28px;
@@ -87,6 +84,15 @@
     0 4px 12px rgba(0, 0, 0, 0.06);
   will-change: transform;
 }
+
+.awards-col--left .awards-frame:nth-child(3n + 1)  { transform: rotate(-2.6deg); }
+.awards-col--left .awards-frame:nth-child(3n + 2)  { transform: rotate(1.8deg); }
+.awards-col--left .awards-frame:nth-child(3n + 3)  { transform: rotate(-0.7deg); }
+.awards-col--right .awards-frame:nth-child(3n + 1) { transform: rotate(2.4deg); }
+.awards-col--right .awards-frame:nth-child(3n + 2) { transform: rotate(-1.9deg); }
+.awards-col--right .awards-frame:nth-child(3n + 3) { transform: rotate(0.9deg); }
+.awards-col--mid .awards-frame:nth-child(odd)      { transform: rotate(-1.5deg); }
+.awards-col--mid .awards-frame:nth-child(even)     { transform: rotate(2.1deg); }
 
 .awards-frame img {
   width: 100%;
@@ -169,8 +175,18 @@
   column-gap: clamp(16px, 4vw, 64px);
   width: 100%;
   max-width: min(1400px, 96vw);
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
   background: transparent;
+}
+
+.awards-cinematic__rule {
+  width: 100%;
+  max-width: min(1400px, 96vw);
+  height: 1px;
+  margin: 0 auto;
+  background: rgba(0, 0, 0, 0.12);
+  transform: scaleX(0);
+  transform-origin: center center;
+  will-change: transform;
 }
 
 .awards-cinematic__item {

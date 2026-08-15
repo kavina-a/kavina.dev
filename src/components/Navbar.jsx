@@ -1,90 +1,121 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./Navbar.css";
 
 const NAV_LINKS = [
   { href: "#about", label: "About" },
   { href: "#work", label: "Work" },
   { href: "#techstack", label: "Tech Stack" },
-  { href: "#projects", label: "Projects" },
+  { href: "#lore", label: "Lore" },
   { href: "#contact", label: "Start a Project", cta: true },
 ];
 
+const SOCIALS = [
+  ["GitHub", "https://github.com/kavina-a"],
+  ["LinkedIn", "https://www.linkedin.com/"],
+  ["Contact", "#contact"],
+];
+
 export default function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const podRef = useRef(null);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  // Close on ESC key
-  useEffect(() => {
-    const onKey = (e) => { if (e.key === "Escape") setMenuOpen(false); };
+    const onKey = (e) => {
+      if (e.key === "Escape") setMenuOpen(false);
+    };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  // Lock body scroll while menu is open
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onPointerDown = (e) => {
+      if (podRef.current && !podRef.current.contains(e.target)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => document.removeEventListener("pointerdown", onPointerDown);
+  }, [menuOpen]);
+
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [menuOpen]);
 
   const closeMenu = () => setMenuOpen(false);
 
   return (
     <>
-      <header className={`nav ${scrolled ? "is-scrolled" : ""}`}>
-        <div className="nav__inner">
-          <a href="#top" className="nav__logo" onClick={closeMenu}>
-            KAVINA<span>.me</span>
-          </a>
-
-          {/* Desktop nav links */}
-          <nav className="nav__links" aria-label="Primary">
-            {NAV_LINKS.map(({ href, label, cta }) => (
-              <a key={href} href={href} className={cta ? "nav__cta" : undefined}>
-                {label}
-              </a>
-            ))}
-          </nav>
-
-          {/* Hamburger — visible on mobile only */}
-          <button
-            className={`nav__hamburger ${menuOpen ? "is-open" : ""}`}
-            onClick={() => setMenuOpen((v) => !v)}
-            aria-label={menuOpen ? "Close menu" : "Open menu"}
-            aria-expanded={menuOpen}
-          >
-            <span aria-hidden="true" />
-            <span aria-hidden="true" />
-            <span aria-hidden="true" />
-          </button>
-        </div>
+      <header className="nav">
+        <a href="#top" className="nav__logo" onClick={closeMenu}>
+          KAVINA<span>.me</span>
+        </a>
       </header>
 
       {/*
-        Mobile menu overlay — rendered as a SIBLING to <header>, NOT inside it.
-        This keeps it outside the nav's mix-blend-mode:difference stacking context
-        so it renders as a proper dark panel without blending artifacts.
-        z-index 199 puts it just below the nav bar (200) so logo + hamburger
-        remain on top.
+        One white shell. Closed = the Menu pill. Open = the same shell
+        grows into the card, with Close sitting inside at the top.
       */}
-      <div
-        className={`nav__mobile-menu ${menuOpen ? "is-open" : ""}`}
-        aria-hidden={!menuOpen}
-        role="dialog"
-        aria-label="Mobile navigation"
-      >
-        <nav>
-          {NAV_LINKS.map(({ href, label }) => (
-            <a key={href} href={href} onClick={closeMenu}>
-              {label}
-            </a>
-          ))}
-        </nav>
+      <div className={`menu-pod ${menuOpen ? "is-open" : ""}`} ref={podRef}>
+        <button
+          type="button"
+          className="menu-pod__trigger"
+          onClick={() => setMenuOpen((v) => !v)}
+          aria-expanded={menuOpen}
+          aria-controls="menu-pod-body"
+        >
+          <span className="menu-pod__icon" aria-hidden="true">
+            <span />
+            <span />
+          </span>
+          <span className="menu-pod__label" aria-hidden="true">
+            <span className="menu-pod__label-word">Menu</span>
+            <span className="menu-pod__label-word">Close</span>
+          </span>
+          <span className="sr-only">{menuOpen ? "Close menu" : "Open menu"}</span>
+        </button>
+
+        <div
+          className="menu-pod__body"
+          id="menu-pod-body"
+          aria-hidden={!menuOpen}
+        >
+          <div className="menu-pod__body-inner">
+            <p className="menu-pod__eyebrow">Menu</p>
+            <nav className="menu-pod__links" aria-label="Primary">
+              {NAV_LINKS.map(({ href, label, cta }) => (
+                <a
+                  key={href}
+                  href={href}
+                  className={cta ? "is-cta" : undefined}
+                  onClick={closeMenu}
+                >
+                  {label}
+                </a>
+              ))}
+            </nav>
+
+            <div className="menu-pod__divider" aria-hidden="true" />
+
+            <p className="menu-pod__eyebrow">Social media</p>
+            <div className="menu-pod__socials">
+              {SOCIALS.map(([label, href]) => (
+                <a
+                  key={label}
+                  href={href}
+                  target={href.startsWith("#") ? undefined : "_blank"}
+                  rel={href.startsWith("#") ? undefined : "noopener noreferrer"}
+                  onClick={closeMenu}
+                >
+                  {label}
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );

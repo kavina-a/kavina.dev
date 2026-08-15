@@ -1,0 +1,240 @@
+/* Compact by default → expands on hover / open / live (ElevenLabs fluid style) */
+
+.voice-orb {
+  --orb-size: 57px;
+  --orb-expanded: 123px;
+  --orb-fluid: 1.65;
+
+  position: fixed;
+  right: clamp(14px, 2.8vw, 26px);
+  bottom: clamp(16px, 3vw, 28px);
+  z-index: 122;
+  width: var(--orb-size);
+  height: var(--orb-size);
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  border-radius: 50%;
+  transition:
+    width 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    height 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.voice-orb:hover,
+.voice-orb:focus-visible,
+.voice-orb.is-open,
+.voice-orb.is-live,
+.voice-orb.is-connecting {
+  --orb-size: var(--orb-expanded);
+  --orb-fluid: 2.1;
+}
+
+.voice-orb:focus-visible {
+  outline: 2px solid #f4f4f2;
+  outline-offset: 10px;
+}
+
+/* Soft atmospheric fluid — the ElevenLabs “glow cloud” around the sphere */
+.voice-orb__halo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(var(--orb-size) * var(--orb-fluid));
+  height: calc(var(--orb-size) * var(--orb-fluid));
+  translate: -50% -50%;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(
+      circle at 38% 32%,
+      rgba(244, 244, 242, 0.55) 0%,
+      rgba(244, 244, 242, 0.2) 28%,
+      rgba(20, 20, 20, 0.18) 52%,
+      transparent 72%
+    ),
+    radial-gradient(
+      circle at 68% 70%,
+      rgba(244, 244, 242, 0.22) 0%,
+      transparent 55%
+    );
+  filter: blur(14px);
+  opacity: 0.55;
+  transition:
+    width 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    height 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.45s ease,
+    filter 0.45s ease;
+  animation: voiceOrbFluid 4.2s ease-in-out infinite;
+}
+
+.voice-orb:hover .voice-orb__halo,
+.voice-orb:focus-visible .voice-orb__halo,
+.voice-orb.is-open .voice-orb__halo,
+.voice-orb.is-live .voice-orb__halo,
+.voice-orb.is-connecting .voice-orb__halo {
+  opacity: 0.95;
+  filter: blur(18px);
+}
+
+/* Extra-soft outer bloom — the loose fluid around ElevenLabs orbs */
+.voice-orb__halo--soft {
+  --orb-fluid: 2.4;
+  filter: blur(28px);
+  opacity: 0.35;
+  animation-duration: 5.6s;
+  animation-direction: reverse;
+  background:
+    radial-gradient(
+      circle at 50% 50%,
+      rgba(244, 244, 242, 0.32) 0%,
+      rgba(244, 244, 242, 0.1) 40%,
+      transparent 68%
+    );
+}
+
+.voice-orb:hover .voice-orb__halo--soft,
+.voice-orb:focus-visible .voice-orb__halo--soft,
+.voice-orb.is-open .voice-orb__halo--soft,
+.voice-orb.is-live .voice-orb__halo--soft,
+.voice-orb.is-connecting .voice-orb__halo--soft {
+  --orb-fluid: 2.85;
+  opacity: 0.7;
+  filter: blur(34px);
+}
+
+.voice-orb__canvas {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  isolation: isolate;
+  background: #f4f4f2;
+  box-shadow:
+    0 0 0 1px rgba(10, 10, 10, 0.18),
+    0 8px 24px rgba(0, 0, 0, 0.4);
+  transition: box-shadow 0.45s ease;
+}
+
+.voice-orb__fluid {
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.voice-orb:hover .voice-orb__canvas,
+.voice-orb:focus-visible .voice-orb__canvas,
+.voice-orb.is-open .voice-orb__canvas,
+.voice-orb.is-live .voice-orb__canvas {
+  box-shadow:
+    0 0 0 1px rgba(10, 10, 10, 0.28),
+    0 0 40px rgba(244, 244, 242, 0.12),
+    0 16px 48px rgba(0, 0, 0, 0.5);
+}
+
+.voice-orb__label {
+  position: absolute;
+  left: 50%;
+  bottom: -16px;
+  transform: translateX(-50%);
+  z-index: 2;
+  font-size: 0.5rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.42);
+  pointer-events: none;
+  white-space: nowrap;
+  opacity: 0.7;
+  transition:
+    color 0.3s,
+    opacity 0.35s,
+    bottom 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    font-size 0.35s;
+}
+
+.voice-orb:hover .voice-orb__label,
+.voice-orb:focus-visible .voice-orb__label,
+.voice-orb.is-open .voice-orb__label,
+.voice-orb.is-live .voice-orb__label {
+  color: rgba(255, 255, 255, 0.88);
+  opacity: 1;
+  bottom: -20px;
+  font-size: 0.58rem;
+  letter-spacing: 0.24em;
+}
+
+.voice-orb.is-live .voice-orb__halo,
+.voice-orb.is-speaking .voice-orb__halo {
+  animation-duration: 1.6s;
+}
+
+.voice-orb.is-connecting .voice-orb__halo {
+  animation-duration: 1.1s;
+  background:
+    radial-gradient(
+      circle at 40% 35%,
+      rgba(244, 244, 242, 0.5) 0%,
+      rgba(244, 244, 242, 0.18) 32%,
+      transparent 70%
+    );
+}
+
+@keyframes voiceOrbFluid {
+  0%, 100% {
+    transform: scale(0.94) rotate(0deg);
+  }
+  50% {
+    transform: scale(1.08) rotate(8deg);
+  }
+}
+
+@media (max-width: 720px) {
+  .voice-orb {
+    --orb-size: 51px;
+    --orb-expanded: 101px;
+  }
+
+  .voice-orb__label {
+    bottom: -14px;
+    font-size: 0.48rem;
+  }
+
+  .voice-orb:hover .voice-orb__label,
+  .voice-orb:focus-visible .voice-orb__label,
+  .voice-orb.is-open .voice-orb__label,
+  .voice-orb.is-live .voice-orb__label {
+    bottom: -18px;
+    font-size: 0.52rem;
+  }
+}
+
+/* Touch: stay compact until opened / live (no sticky hover) */
+@media (hover: none) {
+  .voice-orb:hover:not(.is-open):not(.is-live):not(.is-connecting) {
+    --orb-size: 51px;
+    --orb-fluid: 1.65;
+  }
+
+  .voice-orb:hover:not(.is-open):not(.is-live):not(.is-connecting) .voice-orb__halo {
+    opacity: 0.55;
+    filter: blur(14px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .voice-orb,
+  .voice-orb__halo,
+  .voice-orb__label {
+    transition: none;
+  }
+
+  .voice-orb__halo {
+    animation: none;
+  }
+}

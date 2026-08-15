@@ -1,0 +1,125 @@
+/* ============================================================
+   MARQUEE STACK — vertical infinite marquee on a convex arc.
+   Cards rest on the right edge; JS sets --arc-x from each card's Y
+   so the column bulges left toward the copy as it scrolls.
+   Card size is derived from container height so ~6 are always in view.
+   ============================================================ */
+
+.marquee-stack {
+  /* 6 cards in view: span = 6 - 5*0.34 overlap */
+  --span: 4.3;
+  --overlap: 0.34;
+  container-type: size;
+  position: relative;
+  width: min(48vw, 560px);
+  height: 100%;
+  overflow: hidden;
+
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 8%,
+    black 92%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 8%,
+    black 92%,
+    transparent 100%
+  );
+}
+
+.marquee-stack__track {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding-right: 10px;
+  animation: marquee-scroll 56s linear infinite;
+  will-change: transform;
+}
+
+.photo-card {
+  position: relative;
+  height: calc(100cqh / var(--span));
+  width: calc(100cqh / var(--span) * 3 / 2);
+  aspect-ratio: 3 / 2;
+  border-radius: 18px;
+  overflow: hidden;
+  flex-shrink: 0;
+  margin-right: var(--nudge, 0px);
+  transform: translate3d(var(--arc-x, 0px), 0, 0) rotate(var(--rot));
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.06),
+    0 14px 32px rgba(0, 0, 0, 0.12);
+  will-change: transform;
+  cursor: pointer;
+  transition: box-shadow 0.35s ease, z-index 0s;
+}
+
+.photo-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #0a0a0a;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+
+.marquee-stack:has(.photo-card:hover) .photo-card:not(:hover)::after {
+  opacity: 0.62;
+}
+
+.marquee-stack:has(.photo-card:hover) .photo-card:hover {
+  z-index: 20;
+  box-shadow:
+    0 6px 16px rgba(0, 0, 0, 0.16),
+    0 22px 44px rgba(0, 0, 0, 0.22);
+}
+
+.photo-card + .photo-card {
+  margin-top: calc(100cqh / var(--span) * var(--overlap) * -1);
+}
+
+.photo-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}
+
+@keyframes marquee-scroll {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-50%); }
+}
+
+.marquee-stack:hover .marquee-stack__track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-stack__track {
+    animation: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .marquee-stack {
+    width: 100%;
+  }
+
+  .marquee-stack__track {
+    padding-right: 8px;
+  }
+
+  .photo-card {
+    border-radius: 14px;
+  }
+}

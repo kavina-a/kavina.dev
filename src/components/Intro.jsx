@@ -1,57 +1,122 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
+import { MYPICS } from "../data/site";
 import "./Intro.css";
 
-// Deck order = the order images cycle through in the slideshow AND the final
-// column order, TOP -> BOTTOM. The first card (cube) starts on top of the pile
-// during the slideshow; the LAST card shown (dino) sits on top of the physical
-// stack and is dealt down to the BOTTOM of the final column.
-const TILES = [
-  { src: "/mypics/binara.events-055 2.JPG",          alt: "Photo 1" },
-  { src: "/mypics/binara.events-111_Original 2.jpg", alt: "Photo 2" },
-  { src: "/mypics/binara.events-114 3.JPG",           alt: "Photo 3" },
-  { src: "/mypics/binara.events-120 2.JPG",           alt: "Photo 4" },
-  { src: "/mypics/binara.events-641_Original 2.jpg", alt: "Photo 5" },
-  { src: "/mypics/binara.events-771_Original 3.jpg", alt: "Photo 6" },
-  { src: "/mypics/binara.events-883_Original 3.jpg", alt: "Photo 7" },
-  { src: "/mypics/binara.events-055 2.JPG",          alt: "Photo 8" },
-];
-
+const FRAMES = MYPICS.map((src, i) => ({ src, alt: `Photo ${i + 1}` }));
+const N = FRAMES.length;
+const NAME = "KAVINA";
+const ROLE = "AI / ML ENGINEER";
 const SUBTITLE_LINES = [
-  "A multi-awarded interactive digital studio crafting",
-  "immersive & interactive experiences for global brands since 2006.",
+  "I build voice agents that actually pick up,",
+  "and NPCs that hold grudges. Let's talk.",
 ];
 
-const N = TILES.length;
-const SLIDESHOW_LOOPS = 2; // how many times the deck cycles before stacking
-const FRAME = 0.42; // seconds each slideshow image is shown
+const FRAME_START = 0.2;
+const FRAME_END = 0.055;
+const shuffleEase = gsap.parseEase("power2.in");
+const frameDuration = (i) =>
+  gsap.utils.interpolate(FRAME_START, FRAME_END, shuffleEase(i / Math.max(N - 1, 1)));
 
-function preloadImages(sources) {
+function preloadImages(sources, onEach) {
   return Promise.all(
     sources.map(
       (src) =>
         new Promise((resolve) => {
           const img = new Image();
-          img.onload = img.onerror = () => resolve();
+          let settled = false;
+          const done = () => {
+            if (settled) return;
+            settled = true;
+            onEach?.();
+            resolve();
+          };
+          img.onload = img.onerror = done;
           img.src = src;
-          if (img.decode) img.decode().then(resolve).catch(() => {});
+          if (img.decode) img.decode().then(done).catch(() => {});
         })
     )
   );
 }
 
+function layoutSvg(svg, clipText, strokeText, images) {
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  const fs = Math.min(w * 0.155, h * 0.22, 248);
+  svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+  [clipText, strokeText].forEach((t) => {
+    t.setAttribute("x", String(w / 2));
+    t.setAttribute("y", String(h * 0.49));
+    t.setAttribute("font-size", String(fs));
+  });
+  images.forEach((img) => {
+    img.setAttribute("x", "0");
+    img.setAttribute("y", "0");
+    img.setAttribute("width", String(w));
+    img.setAttribute("height", String(h));
+    img.setAttribute("preserveAspectRatio", "xMidYMid slice");
+  });
+  return { w, h, fs };
+}
+
 export default function Intro({ onDismiss }) {
   const rootRef = useRef(null);
-  const stageRef = useRef(null);
-  const tileRefs = useRef([]);
-  const leftLabelRef = useRef(null);
-  const rightLabelRef = useRef(null);
-  const subtitleRef = useRef(null);
-  const discoverRef = useRef(null);
+  const svgRef = useRef(null);
+  const clipTextRef = useRef(null);
+  const strokeTextRef = useRef(null);
+  const imageRefs = useRef([]);
+  const countRef = useRef(null);
+  const countNumRef = useRef(null);
+  const metaRef = useRef(null);
+  const skipRef = useRef(null);
 
   const timelineRef = useRef(null);
   const dismissedRef = useRef(false);
-  const [ready, setReady] = useState(false);
+  const autoTimerRef = useRef(null);
+  const liveParallaxRef = useRef(false);
+  const progressProxy = useRef({ n: 0 });
+  const layoutRef = useRef({ w: 0, h: 0, fs: 0 });
+  const clipId = `intro-name-clip-${useId().replace(/:/g, "")}`;
+  const [loaded, setLoaded] = useState(0);
+
+  const playOutro = () => {
+    if (dismissedRef.current) return;
+    dismissedRef.current = true;
+    liveParallaxRef.current = false;
+    window.clearTimeout(autoTimerRef.current);
+    timelineRef.current?.kill();
+    gsap.killTweensOf(imageRefs.current.filter(Boolean));
+    gsap.killTweensOf([clipTextRef.current, strokeTextRef.current]);
+
+    const fs = layoutRef.current.fs || 200;
+    gsap.timeline({
+      defaults: { ease: "power3.inOut" },
+      onComplete: () => {
+        document.body.classList.remove("intro-active");
+        onDismiss?.();
+      },
+    })
+      .to(
+        [countRef.current, metaRef.current, skipRef.current],
+        { autoAlpha: 0, y: -10, duration: 0.32, ease: "power2.out" },
+        0
+      )
+      .to(
+        [clipTextRef.current, strokeTextRef.current],
+        { attr: { "font-size": fs * 1.2 }, duration: 0.65, ease: "expo.in" },
+        0
+      )
+      .to(
+        rootRef.current,
+        { yPercent: -100, duration: 0.95, ease: "expo.inOut" },
+        0.22
+      );
+  };
+
+  const paintCount = (n) => {
+    if (!countNumRef.current) return;
+    countNumRef.current.textContent = String(Math.round(n)).padStart(2, "0");
+  };
 
   useLayoutEffect(() => {
     const prefersReduced = window.matchMedia(
@@ -61,135 +126,102 @@ export default function Intro({ onDismiss }) {
     document.body.classList.add("intro-active");
 
     const ctx = gsap.context(() => {
-      const tiles = tileRefs.current.filter(Boolean);
-
-      // Derive layout metrics from the rendered tile size.
-      const tileH = tiles[0].getBoundingClientRect().height;
-      const gap = tileH * 0.2;
-      const step = tileH + gap;
-      // Final column: index 0 at top, index N-1 (dino) at bottom. Centered.
-      const finalY = (i) => (i - (N - 1) / 2) * step;
-      const peek = Math.max(7, tileH * 0.2); // how far stacked cards peek down
-
-      const subtitleLines = subtitleRef.current.querySelectorAll(
+      const svg = svgRef.current;
+      const clipText = clipTextRef.current;
+      const strokeText = strokeTextRef.current;
+      const images = imageRefs.current.filter(Boolean);
+      const subtitleLines = metaRef.current.querySelectorAll(
         ".intro__subtitle-inner"
       );
 
-      // ---- Base: all tiles centered, stacked, hidden ----
-      gsap.set(tiles, {
+      const layout = layoutSvg(svg, clipText, strokeText, images);
+      layoutRef.current = layout;
+
+      gsap.set(images, { autoAlpha: 0, scale: 1.04, transformOrigin: "50% 50%" });
+      gsap.set(images[0], { autoAlpha: 1, scale: 1 });
+      gsap.set(strokeText, { autoAlpha: 0 });
+      gsap.set(metaRef.current, { autoAlpha: 0 });
+      gsap.set(subtitleLines, { yPercent: 120, autoAlpha: 0 });
+      gsap.set(countRef.current, {
+        autoAlpha: 1,
+        scale: 1,
         xPercent: -50,
         yPercent: -50,
-        x: 0,
-        y: 0,
-        scale: 1,
-        autoAlpha: 0,
-        zIndex: (i) => i + 1, // cube lowest, dino highest (top of pile)
+        transformOrigin: "50% 50%",
       });
-
-      gsap.set([leftLabelRef.current, rightLabelRef.current], {
-        yPercent: 130,
-        autoAlpha: 0,
-      });
-      gsap.set(subtitleLines, { yPercent: 130, autoAlpha: 0 });
-      gsap.set(discoverRef.current, { autoAlpha: 0, y: 12 });
 
       if (prefersReduced) {
-        tiles.forEach((t, i) =>
-          gsap.set(t, { y: finalY(i), autoAlpha: 1, zIndex: 1 })
-        );
-        gsap.set([leftLabelRef.current, rightLabelRef.current], {
-          yPercent: 0,
-          autoAlpha: 1,
-        });
+        gsap.set(strokeText, { autoAlpha: 1 });
+        gsap.set(metaRef.current, { autoAlpha: 1 });
         gsap.set(subtitleLines, { yPercent: 0, autoAlpha: 1 });
-        gsap.set(discoverRef.current, { autoAlpha: 1, y: 0 });
-        setReady(true);
+        gsap.set(countRef.current, { autoAlpha: 0 });
+        autoTimerRef.current = window.setTimeout(playOutro, 900);
         return;
       }
 
-      const tl = gsap.timeline({ onComplete: () => setReady(true) });
+      clipText.setAttribute("font-size", String(layout.fs * 2.35));
+      strokeText.setAttribute("font-size", String(layout.fs * 2.35));
 
-      // ===== PHASE 0 — frame the box: side labels + subtitle settle in =====
-      tl.set(tiles[0], { autoAlpha: 1 }, 0);
+      const tl = gsap.timeline({
+        onComplete: () => {
+          liveParallaxRef.current = true;
+          autoTimerRef.current = window.setTimeout(playOutro, 1200);
+        },
+      });
+
+      tl.addLabel("dive", 0);
       tl.to(
-        [leftLabelRef.current, rightLabelRef.current],
-        { yPercent: 0, autoAlpha: 1, duration: 0.8, ease: "expo.out", stagger: 0.07 },
-        0.1
+        countRef.current,
+        {
+          autoAlpha: 0,
+          scale: 1.08,
+          filter: "blur(18px)",
+          duration: 0.45,
+          ease: "power2.in",
+        },
+        "dive"
+      );
+      tl.to(
+        [clipText, strokeText],
+        { attr: { "font-size": layout.fs }, duration: 1.3, ease: "expo.out" },
+        "dive"
+      );
+      tl.to(strokeText, { autoAlpha: 1, duration: 0.5, ease: "power2.out" }, "dive+=0.55");
+
+      let cursor = 0;
+      const riffleAt = 1.05;
+      for (let i = 1; i < N; i++) {
+        const dur = frameDuration(i);
+        const at = `dive+=${riffleAt + cursor}`;
+        tl.to(
+          images[i - 1],
+          { autoAlpha: 0, scale: 1.05, duration: dur * 0.45, ease: "power1.in" },
+          at
+        );
+        tl.fromTo(
+          images[i],
+          { autoAlpha: 0, scale: 1.08 },
+          { autoAlpha: 1, scale: 1, duration: dur * 0.75, ease: "power2.out" },
+          at
+        );
+        cursor += dur;
+      }
+
+      const lockAt = riffleAt + cursor + 0.04;
+      tl.add(() => {
+        gsap.to(images[N - 1], { scale: 1.08, duration: 4, ease: "none" });
+      }, `dive+=${lockAt}`);
+      tl.to(metaRef.current, { autoAlpha: 1, duration: 0.01 }, `dive+=${lockAt}`);
+      tl.fromTo(
+        ".intro__role-inner",
+        { yPercent: 110, autoAlpha: 0 },
+        { yPercent: 0, autoAlpha: 1, duration: 0.6, ease: "expo.out" },
+        `dive+=${lockAt}`
       );
       tl.to(
         subtitleLines,
-        { yPercent: 0, autoAlpha: 1, duration: 0.8, ease: "expo.out", stagger: 0.08 },
-        0.25
-      );
-
-      // ===== PHASE 1 — SLIDESHOW: one box flips through all 8, looping =====
-      // Only the "current" card is visible; we hop visibility down the z-stack.
-      const slideStart = 0.5;
-      let cursor = slideStart;
-      // Make sure everything except the first frame is hidden at slideshow start.
-      tl.set(tiles.slice(1), { autoAlpha: 0 }, slideStart - 0.001);
-
-      for (let loop = 0; loop < SLIDESHOW_LOOPS; loop++) {
-        for (let i = 0; i < N; i++) {
-          if (loop === 0 && i === 0) {
-            cursor += FRAME; // first frame already visible
-            continue;
-          }
-          const prev = (i - 1 + N) % N;
-          tl.set(tiles[prev], { autoAlpha: 0 }, cursor);
-          tl.set(tiles[i], { autoAlpha: 1 }, cursor);
-          cursor += FRAME;
-        }
-      }
-
-      // ===== PHASE 2 — STACK REVEAL: pile fans downward like a deck =====
-      // The dino (top of pile) holds at center; the cards beneath it peek out
-      // just slightly downward in a tight deck — exactly like a stack of cards.
-      const stackAt = cursor + 0.05;
-      tl.addLabel("stack", stackAt);
-      // dino renders on top of the fan
-      tl.set(tiles, { zIndex: (i) => i + 1 }, "stack");
-      tiles.forEach((t, i) => {
-        const depth = N - 1 - i; // dino:0 (top), cube:7 (deepest)
-        tl.to(
-          t,
-          {
-            autoAlpha: 1,
-            y: depth * peek,
-            scale: 1 - depth * 0.02,
-            duration: 0.55,
-            ease: "back.out(1.3)",
-          },
-          "stack"
-        );
-      });
-
-      // ===== PHASE 3 — DEAL & EXPAND: cards spread into the column =====
-      // After the pile holds for a beat, the top card (dino) travels DOWN to
-      // the bottom slot; every other card rises to its slot above. Dealt
-      // one-by-one from the top of the deck.
-      tl.addLabel("expand", "stack+=0.95");
-      tiles.forEach((t, i) => {
-        const depth = N - 1 - i; // deal order: dino first, then upward
-        tl.to(
-          t,
-          {
-            y: finalY(i),
-            scale: 1,
-            autoAlpha: 1,
-            duration: 1.0,
-            ease: "expo.out",
-          },
-          `expand+=${depth * 0.09}`
-        );
-      });
-      tl.set(tiles, { zIndex: 1 }, "expand+=1.3");
-
-      // ===== PHASE 4 — DISCOVER =====
-      tl.to(
-        discoverRef.current,
-        { autoAlpha: 1, y: 0, duration: 0.6, ease: "expo.out" },
-        "expand+=1.1"
+        { yPercent: 0, autoAlpha: 1, duration: 0.7, ease: "expo.out", stagger: 0.08 },
+        `dive+=${lockAt}`
       );
 
       timelineRef.current = tl;
@@ -205,124 +237,156 @@ export default function Intro({ onDismiss }) {
       };
     }
 
-    preloadImages(TILES.map((t) => t.src)).then(() => {
+    const startedAt = performance.now();
+    preloadImages(
+      FRAMES.map((t) => t.src),
+      () => {
+        if (cancelled) return;
+        setLoaded((n) => n + 1);
+      }
+    ).then(() => {
       if (cancelled) return;
-      timelineRef.current?.play(0);
+      gsap.to(progressProxy.current, {
+        n: 100,
+        duration: 0.28,
+        ease: "power2.out",
+        onUpdate: () => paintCount(progressProxy.current.n),
+      });
+      const wait = Math.max(0, 380 - (performance.now() - startedAt));
+      window.setTimeout(() => {
+        if (cancelled) return;
+        timelineRef.current?.play(0);
+      }, wait);
     });
 
     return () => {
       cancelled = true;
+      liveParallaxRef.current = false;
       ctx.revert();
       document.body.classList.remove("intro-active");
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // ---- Outro ----
   useEffect(() => {
-    if (!ready) return;
+    gsap.to(progressProxy.current, {
+      n: (loaded / N) * 100,
+      duration: 0.28,
+      ease: "power2.out",
+      overwrite: "auto",
+      onUpdate: () => paintCount(progressProxy.current.n),
+    });
+  }, [loaded]);
 
-    const playOutro = () => {
-      if (dismissedRef.current) return;
-      dismissedRef.current = true;
-
-      const tiles = tileRefs.current.filter(Boolean);
-      const tl = gsap.timeline({
-        defaults: { ease: "power3.inOut" },
-        onComplete: () => {
-          document.body.classList.remove("intro-active");
-          onDismiss?.();
-        },
-      });
-
-      tl.to(
-        [
-          leftLabelRef.current,
-          rightLabelRef.current,
-          subtitleRef.current,
-          discoverRef.current,
-        ],
-        { autoAlpha: 0, y: -8, duration: 0.45, ease: "power2.out" },
-        0
-      )
-        .to(
-          tiles,
-          {
-            autoAlpha: 0,
-            scale: 0.9,
-            duration: 0.6,
-            ease: "power3.in",
-            stagger: { each: 0.04, from: "edges" },
-          },
-          0.05
-        )
-        .to(
-          rootRef.current,
-          { yPercent: -100, duration: 1, ease: "expo.inOut" },
-          0.45
-        );
-    };
-
+  useEffect(() => {
     const onWheel = (e) => e.deltaY > 0 && playOutro();
     const onKey = (e) =>
-      ["ArrowDown", "PageDown", " ", "Enter"].includes(e.key) && playOutro();
+      ["ArrowDown", "PageDown", " ", "Enter", "Escape"].includes(e.key) &&
+      playOutro();
     let touchStartY = 0;
     const onTouchStart = (e) => (touchStartY = e.touches[0].clientY);
     const onTouchMove = (e) =>
       touchStartY - e.touches[0].clientY > 24 && playOutro();
 
+    const onMove = (e) => {
+      if (!liveParallaxRef.current) return;
+      const img = imageRefs.current[N - 1];
+      if (!img) return;
+      const nx = e.clientX / window.innerWidth - 0.5;
+      const ny = e.clientY / window.innerHeight - 0.5;
+      gsap.to(img, {
+        x: nx * 28,
+        y: ny * 18,
+        duration: 0.9,
+        ease: "power3.out",
+        overwrite: "auto",
+      });
+    };
+
     window.addEventListener("wheel", onWheel, { passive: true });
     window.addEventListener("keydown", onKey);
     window.addEventListener("touchstart", onTouchStart, { passive: true });
     window.addEventListener("touchmove", onTouchMove, { passive: true });
-    const discover = discoverRef.current;
-    discover?.addEventListener("click", playOutro);
+    window.addEventListener("pointermove", onMove, { passive: true });
+    const skip = skipRef.current;
+    skip?.addEventListener("click", playOutro);
 
     return () => {
       window.removeEventListener("wheel", onWheel);
       window.removeEventListener("keydown", onKey);
       window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchmove", onTouchMove);
-      discover?.removeEventListener("click", playOutro);
+      window.removeEventListener("pointermove", onMove);
+      skip?.removeEventListener("click", playOutro);
+      window.clearTimeout(autoTimerRef.current);
     };
-  }, [ready, onDismiss]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <section className="intro" ref={rootRef} aria-label="Intro">
-      <span className="intro__label intro__label--left">
-        <span className="intro__label-inner" ref={leftLabelRef}>
-          HUMAN THINKERS
-        </span>
-      </span>
-
-      <div className="intro__stage" ref={stageRef}>
-        {TILES.map((tile, i) => (
-          <div
-            key={tile.src}
-            className="intro__tile"
-            ref={(el) => (tileRefs.current[i] = el)}
-          >
-            <img src={tile.src} alt={tile.alt} draggable="false" />
-          </div>
-        ))}
+      <div className="intro__hud">
+        <span className="intro__brand">kavina.me</span>
+        <button
+          className="intro__skip"
+          ref={skipRef}
+          type="button"
+          aria-label="Skip intro"
+        >
+          Skip
+        </button>
       </div>
 
-      <span className="intro__label intro__label--right">
-        <span className="intro__label-inner" ref={rightLabelRef}>
-          DIGITAL MAKERS
+      <div className="intro__count" ref={countRef} aria-hidden="true">
+        <span className="intro__count-num" ref={countNumRef}>
+          00
         </span>
-      </span>
+      </div>
 
-      <p className="intro__subtitle" ref={subtitleRef}>
-        {SUBTITLE_LINES.map((line) => (
-          <span className="intro__subtitle-line" key={line}>
-            <span className="intro__subtitle-inner">{line}</span>
-          </span>
-        ))}
-      </p>
+      <svg className="intro__svg" ref={svgRef} aria-hidden="true">
+        <defs>
+          <clipPath id={clipId}>
+            <text
+              ref={clipTextRef}
+              textAnchor="middle"
+              dominantBaseline="middle"
+            >
+              {NAME}
+            </text>
+          </clipPath>
+        </defs>
+        <g clipPath={`url(#${clipId})`}>
+          {FRAMES.map((frame, i) => (
+            <image
+              key={frame.src + i}
+              ref={(el) => (imageRefs.current[i] = el)}
+              href={frame.src}
+            />
+          ))}
+        </g>
+        <text
+          className="intro__svg-stroke"
+          ref={strokeTextRef}
+          textAnchor="middle"
+          dominantBaseline="middle"
+        >
+          {NAME}
+        </text>
+      </svg>
+      <h1 className="intro__sr-only">{NAME}</h1>
 
-      <button className="intro__discover" ref={discoverRef} type="button">
-        DISCOVER
-      </button>
+      <div className="intro__meta" ref={metaRef}>
+        <p className="intro__role">
+          <span className="intro__role-inner">{ROLE}</span>
+        </p>
+        <p className="intro__subtitle">
+          {SUBTITLE_LINES.map((line) => (
+            <span className="intro__subtitle-line" key={line}>
+              <span className="intro__subtitle-inner">{line}</span>
+            </span>
+          ))}
+        </p>
+      </div>
     </section>
   );
 }

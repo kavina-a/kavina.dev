@@ -118,7 +118,7 @@ export const TECHSTACK = [
   { name: "Data & Tools", lines: ["PostgreSQL", "MongoDB", "Redis", "Git"] },
 ];
 
-// ─── Projects ──────────────────────────────────────────────────────────────
+// ─── Lore — the plots currently running ───────────────────────────────────
 export const PROJECTS = [
   {
     id: "axis",
@@ -131,7 +131,6 @@ export const PROJECTS = [
     tech: ["Python", "OpenAI", "LLM", "Chroma DB", "Unity"],
     github: "https://github.com/kavina-a",
     live: null,
-    img: "/projects/AXIS/image.png",
     gallery: [
       "/projects/AXIS/image.png",
       "/projects/AXIS/image copy.png",
@@ -139,7 +138,43 @@ export const PROJECTS = [
       "/projects/AXIS/image copy 3.png",
       "/projects/AXIS/THESIS  -0-1-.jpg",
     ],
-    accent: "#ff6b6b",
+  },
+  {
+    id: "mathease",
+    title: "MathEase",
+    subtitle: "The tutoring company, with the ops actually built",
+    year: "2026",
+    category: "EdTech × Teaching",
+    description:
+      "I tutor math. Then I got tired of running it out of a spreadsheet. MathEase is the product: teacher dashboard on one side (sessions, at-risk students, mark leaks, a question bank), student app on the other (Edexcel IGCSE path, spaced repetition, missions). If someone's slipping on fractions, the system says so before the exam does.",
+    // tech: ["Next.js", "TypeScript", "React", "Tailwind"],
+    github: null,
+    live: null,
+    gallery: [
+      "/projects/matheasee/Screenshot 2026-08-15 at 19.47.10.png",
+      "/projects/matheasee/Screenshot 2026-08-15 at 19.47.26.png",
+      "/projects/matheasee/Screenshot 2026-08-15 at 19.48.17.png",
+      "/projects/matheasee/Screenshot 2026-08-15 at 19.48.27.png",
+      "/projects/matheasee/Screenshot 2026-08-15 at 19.48.49.png",
+      "/projects/matheasee/Screenshot 2026-08-15 at 19.49.00.png",
+    ],
+  },
+  {
+    id: "cursor",
+    title: "Cursor Community",
+    subtitle: "Leading tech in Cursor Sri Lanka :)",
+    year: "2026",
+    category: "Community × Event",
+    description:
+      "I'm in the Cursor community, and I build for it.",
+    // tech: ["Next.js", "TypeScript"],
+    github: null,
+    live: null,
+    gallery: [
+      "/projects/cursor/image.png",
+      "/projects/cursor/Screenshot 2026-08-15 at 19.55.34.png",
+      "/projects/cursor/Screenshot 2026-08-15 at 19.56.03.png",
+    ],
   },
 ];
 

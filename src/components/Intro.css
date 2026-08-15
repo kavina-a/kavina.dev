@@ -8,78 +8,144 @@
   will-change: transform;
 }
 
-/* ---- Image stage: tiles are absolutely stacked at center so they can
-   slideshow, pile up, and deal out under full GSAP control. ---- */
-.intro__stage {
+/* ── HUD ─────────────────────────────────────────────────────── */
+.intro__hud {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: max(18px, env(safe-area-inset-top))
+    clamp(18px, 3.2vw, 40px)
+    12px;
+  pointer-events: none;
+}
+
+.intro__brand {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: lowercase;
+  color: var(--intro-muted);
+}
+
+.intro__skip {
+  pointer-events: auto;
+  min-height: 44px;
+  padding: 0 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--intro-ink);
+  opacity: 0.55;
+  transition: opacity 0.25s var(--ease-power3-out);
+}
+
+.intro__skip:hover,
+.intro__skip:focus-visible {
+  opacity: 1;
+}
+
+.intro__skip:focus-visible {
+  outline: 2px solid var(--intro-ink);
+  outline-offset: 4px;
+}
+
+/* ── Count ───────────────────────────────────────────────────── */
+.intro__count {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 0;
-  height: 0;
+  z-index: 30;
+  pointer-events: none;
 }
 
-.intro__tile {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: clamp(44px, 3.4vw, 52px);
-  aspect-ratio: 1 / 1;
-  border-radius: 4px;
-  overflow: hidden;
-  background: #d9d9d9; /* loading placeholder visible before decode */
-  will-change: transform, opacity;
-  backface-visibility: hidden;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
-}
-
-.intro__tile img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  user-select: none;
-  -webkit-user-drag: none;
-}
-
-/* ---- Side labels ---- */
-.intro__label {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  overflow: hidden;
-  font-size: clamp(10px, 0.82vw, 12px);
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  line-height: 1.2;
+.intro__count-num {
+  display: block;
+  font-size: clamp(4.2rem, 16vw, 13.5rem);
+  font-weight: 800;
+  letter-spacing: -0.055em;
+  line-height: 0.8;
+  font-variant-numeric: tabular-nums;
   color: var(--intro-ink);
 }
 
-.intro__label--left {
-  left: clamp(18px, 3.4vw, 44px);
+/* ── SVG wordmark: photos clipped to the name ────────────────── */
+.intro__svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 4;
+  pointer-events: none;
 }
 
-.intro__label--right {
-  right: clamp(18px, 3.4vw, 44px);
-  text-align: right;
+.intro__svg text {
+  font-family: var(--font-sans);
+  font-weight: 800;
+  letter-spacing: -0.055em;
+  paint-order: stroke fill;
 }
 
-.intro__label-inner {
+.intro__svg image {
+  filter: brightness(1.16) contrast(1.08) saturate(0.94);
+}
+
+.intro__svg-stroke {
+  fill: none;
+  stroke: rgba(244, 244, 242, 0.48);
+  stroke-width: 1.25;
+}
+
+.intro__sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── Meta ────────────────────────────────────────────────────── */
+.intro__meta {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + clamp(2.4rem, 7.4vw, 6.4rem));
+  transform: translateX(-50%);
+  z-index: 8;
+  text-align: center;
+  width: min(90vw, 36rem);
+  pointer-events: none;
+}
+
+.intro__role {
+  overflow: hidden;
+  margin: 0 0 10px;
+  font-size: clamp(10px, 0.82vw, 12px);
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--intro-ink);
+}
+
+.intro__role-inner {
   display: inline-block;
 }
 
-/* ---- Subtitle ---- */
 .intro__subtitle {
-  position: absolute;
-  left: 50%;
-  bottom: clamp(48px, 7.5vh, 72px);
-  transform: translateX(-50%);
-  text-align: center;
-  font-size: clamp(11px, 0.95vw, 13px);
+  margin: 0;
+  font-size: clamp(12px, 1.05vw, 15px);
   font-weight: 400;
   line-height: 1.55;
-  color: var(--intro-ink);
-  width: max-content;
-  max-width: 90vw;
+  color: var(--intro-muted);
 }
 
 .intro__subtitle-line {
@@ -91,47 +157,18 @@
   display: inline-block;
 }
 
-/* ---- Discover ---- */
-.intro__discover {
-  position: absolute;
-  left: 50%;
-  bottom: clamp(22px, 3.4vh, 32px);
-  transform: translateX(-50%);
-  font-size: clamp(10px, 0.78vw, 11px);
-  font-weight: 600;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--intro-ink);
-  padding: 7px 4px 4px;
-  opacity: 0;
-}
-
-.intro__discover::after {
-  content: "";
-  display: block;
-  height: 1px;
-  margin-top: 5px;
-  background: var(--intro-ink);
-  transform: scaleX(0);
-  transform-origin: center;
-  transition: transform 0.45s var(--ease-power3-out);
-}
-
-.intro__discover:hover::after {
-  transform: scaleX(1);
-}
-
 @media (max-width: 640px) {
-  .intro__tile {
-    width: clamp(40px, 11vw, 48px);
+  .intro__count-num {
+    font-size: clamp(3.25rem, 17.5vw, 5.2rem);
+    letter-spacing: -0.04em;
   }
-  .intro__label {
-    font-size: 9px;
+
+  .intro__meta {
+    top: calc(50% + clamp(2rem, 11vw, 4.2rem));
+    width: 88vw;
   }
-  .intro__label--left {
-    left: 14px;
-  }
-  .intro__label--right {
-    right: 14px;
+
+  .intro__svg-stroke {
+    stroke-width: 0.9;
   }
 }

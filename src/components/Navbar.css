@@ -1,229 +1,251 @@
-/* mix-blend-mode: difference makes nav text auto-readable on both the white
-   hero (#f4f4f2) and the dark site sections (#0a0a0a) — no manual color
-   switching needed. #fff difference with white ≈ black; with black ≈ white. */
+/* ── Logo — mix-blend-mode: difference keeps it readable on light and
+   dark sections without manual color switching. ─────────────────────── */
 .nav {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  z-index: 200;
+  z-index: 250;
   mix-blend-mode: difference;
-  color: #fff;
-  transition: border-color 0.4s ease;
-}
-
-.nav.is-scrolled {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-}
-
-.nav__inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  padding: 18px clamp(20px, 4vw, 56px);
+  padding: 20px clamp(20px, 4vw, 56px);
 }
 
 .nav__logo {
+  display: inline-block;
+  font-family: var(--font-sans);
   font-size: 0.95rem;
-  font-weight: 700;
+  font-weight: var(--fw-bold);
   letter-spacing: 0.06em;
   color: #fff;
   text-decoration: none;
 }
+
 .nav__logo span {
   color: rgba(255, 255, 255, 0.5);
 }
 
-.nav__links {
+/* ── One shell: closed = Menu pill, open = card with Close inside ───── */
+.menu-pod {
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 260;
+  font-family: var(--font-sans);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: max-content;
+  max-width: calc(100vw - 32px);
+  padding: 0;
+  overflow: hidden;
+  background: #fff;
+  color: #111;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 999px;
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.1),
+    0 2px 8px rgba(0, 0, 0, 0.05);
+  transition:
+    width 0.5s var(--ease),
+    min-width 0.5s var(--ease),
+    padding 0.5s var(--ease),
+    border-radius 0.5s var(--ease),
+    box-shadow 0.5s var(--ease);
+}
+
+.menu-pod.is-open {
+  width: min(360px, calc(100vw - 32px));
+  min-width: min(360px, calc(100vw - 32px));
+  padding: 10px 10px 22px;
+  border-radius: 32px;
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.16),
+    0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+.menu-pod__trigger {
   display: flex;
   align-items: center;
-  gap: clamp(16px, 2vw, 34px);
-}
-
-.nav__links a {
-  font-size: 0.85rem;
-  font-weight: 400;
-  color: #fff;
-  text-decoration: none;
-  letter-spacing: 0.01em;
-  transition: opacity 0.25s ease;
-}
-.nav__links a:hover {
-  opacity: 0.6;
-}
-
-.nav__cta {
-  padding: 9px 18px;
-  border: 1px solid #fff;
-  border-radius: 100px;
-  transition: opacity 0.25s ease !important;
-}
-.nav__cta:hover {
-  opacity: 0.6;
-}
-
-.nav__email {
-  font-size: 0.7rem;
-  letter-spacing: 0.12em;
-  color: #fff;
-  text-decoration: none;
-  transition: opacity 0.25s ease;
-}
-.nav__email:hover {
-  opacity: 0.6;
-}
-
-/* ── Hamburger button — hidden on desktop ───────────────────────────── */
-.nav__hamburger {
-  display: none;
-  flex-direction: column;
   justify-content: center;
-  gap: 5.5px;
-  width: 32px;
-  height: 32px;
-  padding: 4px 0;
-  background: none;
-  border: none;
-  cursor: pointer;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 20px 11px 16px;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  border: 1px solid transparent;
+  transition: border-color 0.4s var(--ease), background 0.4s ease;
+}
+
+.menu-pod.is-open .menu-pod__trigger {
+  border-color: rgba(0, 0, 0, 0.12);
+  background: #fff;
+}
+
+/* Two bars → X */
+.menu-pod__icon {
+  position: relative;
+  width: 16px;
+  height: 11px;
   flex-shrink: 0;
 }
 
-.nav__hamburger span {
-  display: block;
-  width: 22px;
+.menu-pod__icon span {
+  position: absolute;
+  left: 0;
+  width: 100%;
   height: 2px;
-  background: #fff;
   border-radius: 2px;
-  transform-origin: center;
+  background: currentColor;
   transition:
-    transform 0.32s cubic-bezier(0.16, 1, 0.3, 1),
-    opacity 0.2s ease;
+    top 0.42s var(--ease),
+    transform 0.42s var(--ease);
+}
+.menu-pod__icon span:nth-child(1) { top: 0; }
+.menu-pod__icon span:nth-child(2) { top: 9px; }
+
+.menu-pod.is-open .menu-pod__icon span:nth-child(1) {
+  top: 4.5px;
+  transform: rotate(45deg);
+}
+.menu-pod.is-open .menu-pod__icon span:nth-child(2) {
+  top: 4.5px;
+  transform: rotate(-45deg);
 }
 
-/* Animated X on open */
-.nav__hamburger.is-open span:nth-child(1) {
-  transform: translateY(7.5px) rotate(45deg);
+.menu-pod__label {
+  position: relative;
+  display: inline-block;
+  width: 3.6ch;
+  height: 1.2em;
+  font-size: 0.86rem;
+  font-weight: var(--fw-medium);
+  letter-spacing: 0.01em;
 }
-.nav__hamburger.is-open span:nth-child(2) {
+
+.menu-pod__label-word {
+  position: absolute;
+  left: 0;
+  top: 0;
+  white-space: nowrap;
+  transition: opacity 0.32s ease, transform 0.38s var(--ease);
+}
+.menu-pod__label-word:nth-child(1) { opacity: 1; transform: translateY(0); }
+.menu-pod__label-word:nth-child(2) { opacity: 0; transform: translateY(6px); }
+
+.menu-pod.is-open .menu-pod__label-word:nth-child(1) {
   opacity: 0;
-  transform: scaleX(0);
+  transform: translateY(-6px);
 }
-.nav__hamburger.is-open span:nth-child(3) {
-  transform: translateY(-7.5px) rotate(-45deg);
-}
-
-/* ── Mobile menu overlay ────────────────────────────────────────────────
-   Sibling to <header>, NOT inside it — keeps it outside the nav's
-   mix-blend-mode:difference stacking context so it renders as a proper
-   dark panel. z-index 199 sits just below the nav bar (200) so the
-   logo + hamburger remain readable on top.                              */
-.nav__mobile-menu {
-  position: fixed;
-  inset: 0;
-  z-index: 199;
-  background: #0a0a0a;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-  /* Only visible on mobile; harmless on desktop at opacity 0 */
-}
-
-.nav__mobile-menu.is-open {
+.menu-pod.is-open .menu-pod__label-word:nth-child(2) {
   opacity: 1;
-  pointer-events: auto;
+  transform: translateY(0);
 }
 
-/* Link list inside mobile menu */
-.nav__mobile-menu nav {
+/* Links live in the same shell and unfold below Close */
+.menu-pod__body {
+  display: grid;
+  grid-template-rows: 0fr;
+  overflow: hidden;
+  transition: grid-template-rows 0.5s var(--ease);
+}
+
+.menu-pod.is-open .menu-pod__body {
+  grid-template-rows: 1fr;
+}
+
+.menu-pod__body-inner {
+  min-height: 0;
+  padding: 0 14px;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity 0.28s ease, transform 0.4s var(--ease);
+}
+
+.menu-pod.is-open .menu-pod__body-inner {
+  padding: 18px 14px 6px;
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.08s;
+}
+
+.menu-pod__eyebrow {
+  font-size: 0.66rem;
+  font-weight: var(--fw-medium);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(17, 17, 17, 0.4);
+  margin-bottom: 12px;
+}
+
+.menu-pod__links {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  width: 100%;
-  padding: 0 clamp(24px, 6vw, 48px);
+  align-items: flex-start;
+  gap: 2px;
 }
 
-.nav__mobile-menu nav a {
-  font-size: clamp(1.8rem, 8vw, 3rem);
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.82);
+.menu-pod__links a {
+  font-size: clamp(1.35rem, 2.6vw, 1.7rem);
+  font-weight: var(--fw-semibold);
+  letter-spacing: -0.01em;
+  color: #111;
   text-decoration: none;
-  letter-spacing: -0.03em;
-  text-transform: uppercase;
-  padding: clamp(14px, 3vh, 22px) 0;
-  width: 100%;
+  padding: 7px 0;
+  transition: color 0.2s ease;
+}
+
+.menu-pod__links a:hover {
+  color: rgba(17, 17, 17, 0.5);
+}
+
+.menu-pod__links a.is-cta {
+  margin-top: 8px;
+  padding: 12px 20px;
+  border-radius: 100px;
+  background: #111;
+  color: #f5f3ee;
+  font-size: 0.95rem;
+  font-weight: var(--fw-medium);
   text-align: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-  transition: color 0.2s ease, opacity 0.2s ease;
-  /* Stagger-in animation (active only when overlay is open) */
-  opacity: 0;
-  transform: translateY(14px);
+  width: fit-content;
 }
 
-.nav__mobile-menu nav a:first-child {
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
+.menu-pod__links a.is-cta:hover {
+  color: #f5f3ee;
+  opacity: 0.82;
 }
 
-.nav__mobile-menu nav a:active,
-.nav__mobile-menu nav a:hover {
-  color: #fff;
-  opacity: 0.55 !important;
+.menu-pod__divider {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.08);
+  margin: 18px 0 16px;
 }
 
-/* Stagger-in keyframe */
-@keyframes navLinkIn {
-  from { opacity: 0; transform: translateY(14px); }
-  to   { opacity: 1; transform: translateY(0); }
+.menu-pod__socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
 }
 
-.nav__mobile-menu.is-open nav a {
-  animation: navLinkIn 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-.nav__mobile-menu.is-open nav a:nth-child(1) { animation-delay: 0.06s; }
-.nav__mobile-menu.is-open nav a:nth-child(2) { animation-delay: 0.11s; }
-.nav__mobile-menu.is-open nav a:nth-child(3) { animation-delay: 0.16s; }
-.nav__mobile-menu.is-open nav a:nth-child(4) { animation-delay: 0.21s; }
-.nav__mobile-menu.is-open nav a:nth-child(5) { animation-delay: 0.26s; }
-
-/* Email link at the bottom of the overlay */
-.nav__mobile-email {
-  margin-top: clamp(24px, 4vh, 40px);
-  font-size: 0.72rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.28);
+.menu-pod__socials a {
+  font-size: 0.82rem;
+  font-weight: var(--fw-medium);
+  color: rgba(17, 17, 17, 0.62);
   text-decoration: none;
   transition: color 0.2s ease;
-  /* Start hidden so it matches the overlay's closed state */
-  opacity: 0;
-  transform: translateY(14px);
 }
 
-/* Animate in only when overlay is open */
-.nav__mobile-menu.is-open .nav__mobile-email {
-  animation: navLinkIn 0.42s cubic-bezier(0.16, 1, 0.3, 1) 0.32s both;
+.menu-pod__socials a:hover {
+  color: #111;
 }
 
-.nav__mobile-email:hover {
-  color: rgba(255, 255, 255, 0.65);
-}
-
-/* ── Mobile breakpoint ──────────────────────────────────────────────── */
-@media (max-width: 860px) {
-  .nav__email {
-    display: none;
-  }
-  /* All desktop links move into the mobile overlay */
-  .nav__links {
-    display: none;
-  }
-  /* Show the hamburger button */
-  .nav__hamburger {
-    display: flex;
-  }
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }

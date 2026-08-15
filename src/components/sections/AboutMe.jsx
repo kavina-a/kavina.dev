@@ -2,22 +2,23 @@ import { useEffect, useRef } from "react";
 import Reveal from "../ui/Reveal";
 import PhotoBurst from "./PhotoBurst";
 import { ABOUT, MYPICS } from "../../data/site";
-import { gsap, ScrollTrigger } from "../../lib/gsap";
+import { gsap } from "../../lib/gsap";
 import "./AboutMe.css";
 
-// About Me — hand-off from the black "Featured Work" world into a bright
-// white stage. Three frames continuously cycle through all portrait photos.
+const LEAD_TOKENS = ABOUT.lead.split(/(\s+)/);
+
 export default function AboutMe() {
   const sectionRef = useRef(null);
   const sheetRef = useRef(null);
-  const contentRef = useRef(null);
+  const eyebrowRef = useRef(null);
+  const leadRef = useRef(null);
 
   useEffect(() => {
     const section = sectionRef.current;
-    if (!section) return;
+    const lead = leadRef.current;
+    if (!section || !lead) return;
 
     const ctx = gsap.context(() => {
-      // black → grey → white as section enters viewport
       gsap.fromTo(
         sheetRef.current,
         { opacity: 0 },
@@ -33,9 +34,8 @@ export default function AboutMe() {
         }
       );
 
-      // text colour follows the background fade
       gsap.fromTo(
-        contentRef.current,
+        eyebrowRef.current,
         { color: "#f4f4f2" },
         {
           color: "#0a0a0a",
@@ -43,11 +43,38 @@ export default function AboutMe() {
           scrollTrigger: {
             trigger: section,
             start: "top bottom",
-            end: "top 30%",
+            end: "top 18%",
             scrub: true,
           },
         }
       );
+
+      const words = lead.querySelectorAll(".aboutme__ink");
+      const prefersReduced = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches;
+
+      if (prefersReduced) {
+        gsap.set(words, { color: "#0a0a0a" });
+        return;
+      }
+
+      gsap.set(words, { color: "rgba(10, 10, 10, 0.08)" });
+
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: lead,
+          start: "top 78%",
+          end: "bottom 42%",
+          scrub: 0.35,
+        },
+      });
+
+      tl.to(words, {
+        color: "#0a0a0a",
+        stagger: 0.06,
+        ease: "none",
+      });
     }, section);
 
     return () => ctx.revert();
@@ -57,16 +84,24 @@ export default function AboutMe() {
     <section className="section aboutme" id="about" ref={sectionRef}>
       <div className="aboutme__sheet" ref={sheetRef} aria-hidden />
 
-      <div className="aboutme__content" ref={contentRef}>
-        <div className="aboutme__eyebrow">
+      <div className="aboutme__content">
+        <div className="aboutme__eyebrow" ref={eyebrowRef}>
           {ABOUT.eyebrow.map((line) => (
             <span key={line}>{line}</span>
           ))}
         </div>
 
-        <Reveal as="words" className="aboutme__lead">
-          {ABOUT.lead}
-        </Reveal>
+        <p className="aboutme__lead" ref={leadRef}>
+          {LEAD_TOKENS.map((token, i) =>
+            /^\s+$/.test(token) ? (
+              token
+            ) : (
+              <span className="aboutme__ink" key={i}>
+                {token}
+              </span>
+            )
+          )}
+        </p>
 
         <PhotoBurst images={MYPICS} />
 

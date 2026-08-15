@@ -1,8 +1,8 @@
 :root {
-  /* Intro stage */
-  --intro-bg: #ffffff;
-  --intro-ink: #0a0a0a;
-  --intro-muted: rgba(10, 10, 10, 0.55);
+  /* Intro stage — void, so the cream hero punches through on dismiss */
+  --intro-bg: #0a0a0a;
+  --intro-ink: #f4f4f2;
+  --intro-muted: rgba(244, 244, 242, 0.62);
 
   /* Main site (dark) */
   --bg: #0a0a0a;
@@ -10,7 +10,17 @@
   --text: #ffffff;
   --text-muted: #6a6a6a;
 
-  --font-primary: "Inter", "Helvetica Neue", Arial, sans-serif;
+  /* Google Sans isn't publicly hostable (no CDN license) so it's named
+     first and falls back to Inter — visually close, already loaded — then
+     the OS UI font stack. Most visitors will render Inter; that's expected. */
+  --font-sans: "Google Sans", "Inter", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-primary: var(--font-sans);
+
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
 
   /* Easing tokens that mirror GSAP curves */
   --ease-power3-out: cubic-bezier(0.16, 1, 0.3, 1);

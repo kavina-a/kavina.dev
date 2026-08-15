@@ -32,8 +32,8 @@ export class FluidSimulation {
 
   _size() {
     const c = this.canvas;
-    const w = c.clientWidth || window.innerWidth;
-    const h = c.clientHeight || window.innerHeight;
+    const w = c.clientWidth || c.parentElement?.clientWidth || 1;
+    const h = c.clientHeight || c.parentElement?.clientHeight || 1;
     return { w, h };
   }
 
@@ -54,12 +54,17 @@ export class FluidSimulation {
 
     this._onResize = () => {
       const { w, h } = this._size();
+      if (w < 2 || h < 2) return;
       this.renderer.setSize(w, h, false);
       this.width = w * this.dpr;
       this.height = h * this.dpr;
       this._setupTargets(); // recreate at the new aspect/resolution
     };
     window.addEventListener("resize", this._onResize);
+    if (typeof ResizeObserver !== "undefined") {
+      this._ro = new ResizeObserver(() => this._onResize());
+      this._ro.observe(canvas);
+    }
   }
 
   _setupScene() {
@@ -172,6 +177,16 @@ export class FluidSimulation {
     this.pointer = { x: 0, y: 0 };
     this.smooth = { x: 0, y: 0, prevX: 0, prevY: 0 };
     this.hasPointer = false;
+    this._autoT = Math.random() * Math.PI * 2;
+
+    if (this.config.autoSplat) {
+      const cx = this.width * 0.5;
+      const cy = this.height * 0.5;
+      this.pointer.x = this.smooth.x = this.smooth.prevX = cx;
+      this.pointer.y = this.smooth.y = this.smooth.prevY = cy;
+      this.hasPointer = true;
+      return;
+    }
 
     const rectXY = (clientX, clientY) => {
       const r = this.canvas.getBoundingClientRect();
@@ -205,6 +220,24 @@ export class FluidSimulation {
     // Canvas-only, passive — never block native vertical scroll on mobile.
     this.canvas.addEventListener("touchstart", this._onTouch, { passive: true });
     this.canvas.addEventListener("touchmove", this._onTouch, { passive: true });
+  }
+
+  _driveAuto(dt) {
+    const c = this.config;
+    const amp = typeof c.autoIntensity === "function" ? c.autoIntensity() : 0.5;
+    const speed = (c.autoSpeed ?? 1) * (0.55 + Math.min(1, Math.max(0, amp)) * 1.7);
+    this._autoT += dt * speed * 1.35;
+
+    const t = this._autoT;
+    const r = Math.min(this.width, this.height) * 0.34;
+    this.pointer.x =
+      this.width * 0.5 +
+      Math.sin(t * 1.15) * r +
+      Math.sin(t * 2.63 + 1.2) * r * 0.3;
+    this.pointer.y =
+      this.height * 0.5 +
+      Math.cos(t * 0.87) * r +
+      Math.cos(t * 1.91 + 0.4) * r * 0.34;
   }
 
   _set(material, uniforms) {
@@ -252,6 +285,8 @@ export class FluidSimulation {
       const texelSize = new THREE.Vector2(1 / this.simSize.w, 1 / this.simSize.h);
       const dyeTexelSize = new THREE.Vector2(1 / this.dyeSize.w, 1 / this.dyeSize.h);
       const dt = 0.016;
+
+      if (c.autoSplat) this._driveAuto(dt);
 
       // --- smooth (lerp) the pointer and emit interpolated splats ---
       if (this.hasPointer) {
@@ -363,9 +398,12 @@ export class FluidSimulation {
     this._disposed = true;
     cancelAnimationFrame(this._raf);
     window.removeEventListener("resize", this._onResize);
-    window.removeEventListener("mousemove", this._onMove);
-    this.canvas.removeEventListener("touchstart", this._onTouch);
-    this.canvas.removeEventListener("touchmove", this._onTouch);
+    this._ro?.disconnect();
+    if (this._onMove) window.removeEventListener("mousemove", this._onMove);
+    if (this._onTouch) {
+      this.canvas.removeEventListener("touchstart", this._onTouch);
+      this.canvas.removeEventListener("touchmove", this._onTouch);
+    }
     this._disposeTargets();
     Object.values(this.material || {}).forEach((mat) => mat.dispose());
     this.quad.geometry.dispose();

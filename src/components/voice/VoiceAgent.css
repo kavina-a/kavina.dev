@@ -1,7 +1,7 @@
 .voice-agent {
   position: fixed;
-  right: clamp(16px, 3vw, 28px);
-  bottom: clamp(52px, 6vw, 72px);
+  right: clamp(14px, 2.8vw, 26px);
+  bottom: calc(clamp(16px, 3vw, 28px) + 150px);
   z-index: 121;
   pointer-events: none;
 }
@@ -47,6 +47,18 @@
   margin-bottom: 4px;
 }
 
+.voice-agent__timer {
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(244, 244, 242, 0.55);
+  margin: 0 0 10px;
+}
+
+.voice-agent__timer.is-ending {
+  color: #f4f4f2;
+}
+
 .voice-agent__hint {
   font-size: 0.82rem;
   line-height: 1.45;
@@ -66,7 +78,7 @@
   display: block;
   width: 3px;
   border-radius: 999px;
-  background: #6affb4;
+  background: #f4f4f2;
   animation: voiceBar 0.9s ease-in-out infinite;
 }
 
@@ -117,8 +129,8 @@
 }
 
 .voice-agent__actions button.is-primary:hover {
-  background: #6affb4;
-  border-color: #6affb4;
+  background: #d4d4d4;
+  border-color: #d4d4d4;
 }
 
 .voice-agent__actions button:disabled {
@@ -139,7 +151,7 @@
 
 .voice-agent__toast {
   font-size: 0.78rem;
-  color: #6affb4;
+  color: #f4f4f2;
   margin-top: 12px;
   line-height: 1.4;
 }
@@ -150,6 +162,6 @@
 
 @media (max-width: 720px) {
   .voice-agent {
-    bottom: clamp(72px, 14vw, 92px);
+    bottom: calc(clamp(16px, 3vw, 28px) + 128px);
   }
 }

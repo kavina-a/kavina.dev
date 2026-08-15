@@ -29,6 +29,7 @@ export function useLenis({ autoStart = true } = {}) {
       wheelMultiplier: 0.9,
     });
     lenisRef.current = lenis;
+    window.__lenis = lenis;
     lenis.scrollTo(0, { immediate: true });
 
     lenis.on("scroll", ScrollTrigger.update);
@@ -41,6 +42,7 @@ export function useLenis({ autoStart = true } = {}) {
     return () => {
       gsap.ticker.remove(raf);
       lenis.destroy();
+      if (window.__lenis === lenis) window.__lenis = null;
       lenisRef.current = null;
     };
   }, [autoStart]);
