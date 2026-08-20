@@ -1,4 +1,4 @@
-import { CONTACT_EMAIL } from "../data/site";
+import { submitWeb3Form, openMailto } from "./submitWeb3Form";
 
 export function formatContactMessage(answers) {
   return [
@@ -12,43 +12,25 @@ export function formatContactMessage(answers) {
 
 /**
  * Sends the inquiry to hi@kavina.me via Web3Forms when VITE_WEB3FORMS_ACCESS_KEY
- * is set. Otherwise opens the visitor's mail app with a pre-filled draft.
+ * is set. Falls back to a pre-filled mail draft if the API is blocked or unset.
  */
 export async function sendContactEmail(answers) {
   const subject = `Message from ${answers.name || "kavina.me"}`;
   const message = formatContactMessage(answers);
-  const accessKey = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY;
 
-  if (accessKey) {
-    const res = await fetch("https://api.web3forms.com/submit", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({
-        access_key: accessKey,
-        subject,
-        from_name: answers.name,
-        email: answers.email,
-        replyto: answers.email,
-        message,
-      }),
+  try {
+    const result = await submitWeb3Form({
+      subject,
+      name: answers.name,
+      from_name: answers.name || "kavina.me",
+      email: answers.email,
+      replyto: answers.email,
+      message,
     });
-
-    const data = await res.json();
-    if (!res.ok || !data.success) {
-      throw new Error(data.message || "Could not send your message. Try again.");
-    }
-
-    return { method: "email" };
+    if (result.method === "email") return result;
+  } catch {
+    // fall through to mailto
   }
 
-  const params = new URLSearchParams({
-    subject,
-    body: message,
-  });
-
-  window.location.href = `mailto:${CONTACT_EMAIL}?${params.toString()}`;
-  return { method: "mailto" };
+  return openMailto({ subject, body: message });
 }

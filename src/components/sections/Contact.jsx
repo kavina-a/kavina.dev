@@ -78,13 +78,17 @@ export default function Contact() {
   const onKey = (e) => {
     if (sending) return;
 
-    if (e.key === "Enter" && current.type !== "textarea") {
+    if (e.key !== "Enter") return;
+
+    if (current.type === "textarea") {
+      if (e.shiftKey) return;
       e.preventDefault();
       advance();
+      return;
     }
-    if (e.key === "Enter" && e.metaKey && current.type === "textarea") {
-      advance();
-    }
+
+    e.preventDefault();
+    advance();
   };
 
   return (

@@ -1,4 +1,5 @@
 import { CONTACT_EMAIL } from "../data/site";
+import { submitWeb3Form, openMailto } from "./submitWeb3Form";
 
 export function formatVoiceLeadMessage(lead) {
   return [
@@ -19,7 +20,7 @@ export function formatVoiceLeadMessage(lead) {
 
 /**
  * Sends a voice-agent lead to hi@kavina.me via Web3Forms when
- * VITE_WEB3FORMS_ACCESS_KEY is set. Otherwise opens a pre-filled mail draft.
+ * VITE_WEB3FORMS_ACCESS_KEY is set. Falls back to a pre-filled mail draft.
  */
 export async function sendVoiceLead(lead) {
   const contact = lead.contact?.trim();
@@ -29,39 +30,21 @@ export async function sendVoiceLead(lead) {
 
   const subject = `Voice lead — ${lead.name?.trim() || contact}`;
   const message = formatVoiceLeadMessage(lead);
-  const accessKey = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY;
   const replyEmail = lead.contact_type === "email" ? contact : undefined;
 
-  if (accessKey) {
-    const res = await fetch("https://api.web3forms.com/submit", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({
-        access_key: accessKey,
-        subject,
-        from_name: lead.name?.trim() || "Voice agent lead",
-        email: replyEmail || CONTACT_EMAIL,
-        replyto: replyEmail,
-        message,
-      }),
+  try {
+    const result = await submitWeb3Form({
+      subject,
+      name: lead.name?.trim() || "Voice agent lead",
+      from_name: lead.name?.trim() || "Voice agent lead",
+      email: replyEmail || CONTACT_EMAIL,
+      replyto: replyEmail,
+      message,
     });
-
-    const data = await res.json();
-    if (!res.ok || !data.success) {
-      throw new Error(data.message || "Could not send the lead. Try again.");
-    }
-
-    return { method: "email" };
+    if (result.method === "email") return result;
+  } catch {
+    // fall through to mailto
   }
 
-  const params = new URLSearchParams({
-    subject,
-    body: message,
-  });
-
-  window.location.href = `mailto:${CONTACT_EMAIL}?${params.toString()}`;
-  return { method: "mailto" };
+  return openMailto({ subject, body: message });
 }
