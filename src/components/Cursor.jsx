@@ -20,6 +20,9 @@ export default function Cursor() {
       pos.x = e.clientX;
       pos.y = e.clientY;
       dot.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
+      const ink = Boolean(e.target?.closest?.("[data-cursor-ink]"));
+      dot.classList.toggle("is-ink", ink);
+      ring.classList.toggle("is-ink", ink);
     };
 
     const tick = () => {

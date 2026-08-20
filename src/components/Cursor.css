@@ -37,6 +37,19 @@
   border-color: rgba(255, 255, 255, 0.9);
 }
 
+.cursor-dot.is-ink {
+  background: #1a1a1a;
+}
+
+.cursor-ring.is-ink {
+  border-color: rgba(26, 26, 26, 0.55);
+}
+
+.cursor-ring.is-ink.is-hover {
+  background: rgba(26, 26, 26, 0.06);
+  border-color: rgba(26, 26, 26, 0.85);
+}
+
 @media (pointer: coarse) {
   .cursor-dot,
   .cursor-ring {

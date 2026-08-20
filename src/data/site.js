@@ -110,12 +110,22 @@ export const AWARDS = [
 ];
 
 export const TECHSTACK = [
-  { name: "Languages", lines: ["Python", "JavaScript", "TypeScript", "Java"] },
-  { name: "AI / ML", lines: ["PyTorch", "LangChain", "OpenAI", "HuggingFace"] },
-  { name: "Frontend", lines: ["React", "Next.js", "GSAP", "Tailwind"] },
-  { name: "Backend", lines: ["Node.js", "Spring Boot", "FastAPI", "Express"] },
-  { name: "Cloud & DevOps", lines: ["AWS", "Docker", "GCP", "Vercel"] },
-  { name: "Data & Tools", lines: ["PostgreSQL", "MongoDB", "Redis", "Git"] },
+  { name: "MongoDB", slug: "mongodb" },
+  { name: "Express", slug: "express", fit: "wide" },
+  { name: "React", slug: "react" },
+  { name: "Node.js", slug: "nodedotjs" },
+  { name: "Pipecat", slug: "pipecat", fit: "wide" },
+  { name: "TypeScript", slug: "typescript" },
+  { name: "Next.js", slug: "nextdotjs" },
+  { name: "React Native", slug: "reactnative" },
+  { name: "LLMs", slug: "llm" },
+  { name: "TTS", slug: "tts" },
+  { name: "STT", slug: "stt" },
+  { name: "STS", slug: "sts" },
+  { name: "Docker Compose", slug: "docker", fit: "wide" },
+  { name: "GitLab CI/CD", slug: "gitlab" },
+  { name: "AWS EC2", slug: "amazonec2" },
+  { name: "Vercel", slug: "vercel" },
 ];
 
 // ─── Lore — the plots currently running ───────────────────────────────────

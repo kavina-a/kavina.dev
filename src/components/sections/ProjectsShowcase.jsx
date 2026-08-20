@@ -53,11 +53,11 @@ export default function ProjectsShowcase() {
             <span>{project.category}</span>
           </p>
           <h2 className="stack-hero__title" key={`title-${project.id}`}>
-            {project.title}
+            <span className="stack-hero__title-lead">{project.title}</span>
+            {project.subtitle && (
+              <span className="stack-hero__title-sub">{project.subtitle}</span>
+            )}
           </h2>
-          <p className="stack-hero__sub" key={`sub-${project.id}`}>
-            {project.subtitle}
-          </p>
 
           {project.description && (
             <p className="stack-hero__desc" key={`desc-${project.id}`}>
