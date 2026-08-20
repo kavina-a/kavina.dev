@@ -23,11 +23,11 @@ export default function Contact() {
   const validateStep = (value) => {
     const v = (value ?? answers[current.id] ?? "").trim();
 
-    if (current.type === "textarea" && current.id === "message" && !v) {
-      return "Write a short message before sending.";
+    if (!v) {
+      return current.id === "message"
+        ? "Write a short message before sending."
+        : "Please fill this in before continuing.";
     }
-    if (current.type === "textarea") return true;
-    if (!v) return "Please fill this in before continuing.";
 
     if (current.type === "email" && !EMAIL_RE.test(v)) {
       return "Enter a valid email address.";
@@ -146,6 +146,7 @@ export default function Contact() {
               <div className="bot__chips">
                 {current.options.map((o) => (
                   <button
+                    type="button"
                     key={o}
                     className={answers[current.id] === o ? "is-on" : ""}
                     onClick={() => advance(o)}
@@ -162,6 +163,7 @@ export default function Contact() {
 
             {current.type !== "chips" && (
               <button
+                type="button"
                 className="bot__next"
                 onClick={() => advance()}
                 disabled={sending}
