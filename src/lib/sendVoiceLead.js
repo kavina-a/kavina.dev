@@ -1,5 +1,4 @@
-import { CONTACT_EMAIL } from "../data/site";
-import { submitWeb3Form, openMailto } from "./submitWeb3Form";
+import { submitInbox } from "./submitWeb3Form";
 
 export function formatVoiceLeadMessage(lead) {
   return [
@@ -18,33 +17,20 @@ export function formatVoiceLeadMessage(lead) {
   ].join("\n");
 }
 
-/**
- * Sends a voice-agent lead to VITE_CONTACT_EMAIL via FormSubmit.
- * VITE_WEB3FORMS_ACCESS_KEY is set. Falls back to a pre-filled mail draft.
- */
 export async function sendVoiceLead(lead) {
   const contact = lead.contact?.trim();
   if (!contact) {
     throw new Error("Contact email or phone is required.");
   }
 
-  const subject = `Voice lead — ${lead.name?.trim() || contact}`;
-  const message = formatVoiceLeadMessage(lead);
-  const replyEmail = lead.contact_type === "email" ? contact : undefined;
-
-  try {
-    const result = await submitWeb3Form({
-      subject,
-      name: lead.name?.trim() || "Voice agent lead",
-      from_name: lead.name?.trim() || "Voice agent lead",
-      email: replyEmail || CONTACT_EMAIL,
-      replyto: replyEmail,
-      message,
-    });
-    if (result.method === "email") return result;
-  } catch {
-    // fall through to mailto
+  const result = await submitInbox({
+    subject: `Voice lead — ${lead.name?.trim() || contact}`,
+    name: lead.name?.trim() || "Voice agent lead",
+    email: lead.contact_type === "email" ? contact : undefined,
+    message: formatVoiceLeadMessage(lead),
+  });
+  if (result.method !== "email") {
+    throw new Error("Could not send the lead. Try again.");
   }
-
-  return openMailto({ subject, body: message });
+  return result;
 }

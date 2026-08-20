@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { CONTACT_EMAIL, CONTACT_STEPS } from "../../data/site";
+import { CONTACT_STEPS } from "../../data/site";
 import { sendContactEmail } from "../../lib/sendContactEmail";
 import "./sections.css";
 
@@ -11,7 +11,6 @@ export default function Contact() {
   const [done, setDone] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
-  const [sentVia, setSentVia] = useState(null);
   const inputRef = useRef(null);
   const current = CONTACT_STEPS[step];
 
@@ -42,8 +41,7 @@ export default function Contact() {
     setError("");
 
     try {
-      const result = await sendContactEmail(finalAnswers);
-      setSentVia(result.method);
+      await sendContactEmail(finalAnswers);
       setDone(true);
     } catch (err) {
       setError(err.message || "Something went wrong. Please try again.");
@@ -103,15 +101,6 @@ export default function Contact() {
           Hey, I&apos;m probably not online right now.
           <br />
           Leave a message and I&apos;ll get back to you soon. <kbd>Hit Enter</kbd>
-          {CONTACT_EMAIL && (
-            <>
-              <br />
-              Or write{" "}
-              <a className="bot__mail" href={`mailto:${CONTACT_EMAIL}`}>
-                {CONTACT_EMAIL}
-              </a>
-            </>
-          )}
         </p>
 
         {CONTACT_STEPS.slice(0, step).map((s) => (
@@ -190,22 +179,8 @@ export default function Contact() {
 
         {done && (
           <div className="bot__success">
-            {sentVia === "mailto" ? (
-              <>
-                <p>Almost there.</p>
-                <p>
-                  Your email app should have opened with everything filled in — hit
-                  send. Or write{" "}
-                  <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>{" "}
-                  directly.
-                </p>
-              </>
-            ) : (
-              <>
-                <p>Sent.</p>
-                <p>I&apos;ll read this and get back to you at {answers.email}.</p>
-              </>
-            )}
+            <p>Sent.</p>
+            <p>I&apos;ll read this and get back to you at {answers.email}.</p>
           </div>
         )}
       </div>

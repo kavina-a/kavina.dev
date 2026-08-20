@@ -1,4 +1,4 @@
-import { submitWeb3Form, openMailto } from "./submitWeb3Form";
+import { submitInbox } from "./submitWeb3Form";
 
 export function formatContactMessage(answers) {
   return [
@@ -10,27 +10,15 @@ export function formatContactMessage(answers) {
   ].join("\n");
 }
 
-/**
- * Sends the inquiry via FormSubmit to VITE_CONTACT_EMAIL (your Gmail).
- * is set. Falls back to a pre-filled mail draft if the API is blocked or unset.
- */
 export async function sendContactEmail(answers) {
-  const subject = `Message from ${answers.name || "kavina.me"}`;
-  const message = formatContactMessage(answers);
-
-  try {
-    const result = await submitWeb3Form({
-      subject,
-      name: answers.name,
-      from_name: answers.name || "kavina.me",
-      email: answers.email,
-      replyto: answers.email,
-      message,
-    });
-    if (result.method === "email") return result;
-  } catch {
-    // fall through to mailto
+  const result = await submitInbox({
+    subject: `Message from ${answers.name || "kavina.me"}`,
+    name: answers.name,
+    email: answers.email,
+    message: formatContactMessage(answers),
+  });
+  if (result.method !== "email") {
+    throw new Error("Could not send your message. Please try again.");
   }
-
-  return openMailto({ subject, body: message });
+  return result;
 }
