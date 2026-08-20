@@ -151,6 +151,8 @@ export const PROJECTS = [
     github: null,
     live: null,
     gallery: [
+      "/projects/matheasee/Screenshot 2026-08-20 at 18.18.44.png",
+      "/projects/matheasee/Screenshot 2026-08-20 at 18.19.07.png",
       "/projects/matheasee/Screenshot 2026-08-15 at 19.47.10.png",
       "/projects/matheasee/Screenshot 2026-08-15 at 19.47.26.png",
       "/projects/matheasee/Screenshot 2026-08-15 at 19.48.17.png",
@@ -171,6 +173,8 @@ export const PROJECTS = [
     github: null,
     live: null,
     gallery: [
+      "/projects/cursor/Screenshot 2026-08-20 at 18.16.20.png",
+      "/projects/cursor/Screenshot 2026-08-20 at 18.16.52.png",
       "/projects/cursor/image.png",
       "/projects/cursor/Screenshot 2026-08-15 at 19.55.34.png",
       "/projects/cursor/Screenshot 2026-08-15 at 19.56.03.png",
