@@ -11,7 +11,7 @@ export function formatContactMessage(answers) {
 }
 
 /**
- * Sends the inquiry to hi@kavina.me via Web3Forms when VITE_WEB3FORMS_ACCESS_KEY
+ * Sends the inquiry via FormSubmit to VITE_CONTACT_EMAIL (your Gmail).
  * is set. Falls back to a pre-filled mail draft if the API is blocked or unset.
  */
 export async function sendContactEmail(answers) {

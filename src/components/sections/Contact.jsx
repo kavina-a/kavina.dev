@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { CONTACT_STEPS } from "../../data/site";
+import { CONTACT_EMAIL, CONTACT_STEPS } from "../../data/site";
 import { sendContactEmail } from "../../lib/sendContactEmail";
 import "./sections.css";
 
@@ -103,6 +103,15 @@ export default function Contact() {
           Hey, I&apos;m probably not online right now.
           <br />
           Leave a message and I&apos;ll get back to you soon. <kbd>Hit Enter</kbd>
+          {CONTACT_EMAIL && (
+            <>
+              <br />
+              Or write{" "}
+              <a className="bot__mail" href={`mailto:${CONTACT_EMAIL}`}>
+                {CONTACT_EMAIL}
+              </a>
+            </>
+          )}
         </p>
 
         {CONTACT_STEPS.slice(0, step).map((s) => (
@@ -186,7 +195,9 @@ export default function Contact() {
                 <p>Almost there.</p>
                 <p>
                   Your email app should have opened with everything filled in — hit
-                  send and it&apos;s on its way.
+                  send. Or write{" "}
+                  <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>{" "}
+                  directly.
                 </p>
               </>
             ) : (

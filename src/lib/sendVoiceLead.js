@@ -19,7 +19,7 @@ export function formatVoiceLeadMessage(lead) {
 }
 
 /**
- * Sends a voice-agent lead to hi@kavina.me via Web3Forms when
+ * Sends a voice-agent lead to VITE_CONTACT_EMAIL via FormSubmit.
  * VITE_WEB3FORMS_ACCESS_KEY is set. Falls back to a pre-filled mail draft.
  */
 export async function sendVoiceLead(lead) {

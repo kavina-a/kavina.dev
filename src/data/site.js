@@ -182,7 +182,7 @@ export const PROJECTS = [
   },
 ];
 
-export const CONTACT_EMAIL = "hi@kavina.me";
+export const CONTACT_EMAIL = import.meta.env.VITE_CONTACT_EMAIL || "";
 
 export const CONTACT_STEPS = [
   { id: "name", label: "What's your name?", type: "text", placeholder: "your name" },
