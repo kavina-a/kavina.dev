@@ -21,7 +21,7 @@ const CHIP = 0x0001;
 const WALL = 0x0002;
 
 const CONFIG = {
-  chipSize: 56,
+  chipSize: 62,
   gravity: 1,
   restitution: 0.55,
   friction: 0.12,
@@ -57,8 +57,8 @@ function syncMouseFromPointer(mouse, field, event) {
 }
 
 function chipSizeForWidth(width) {
-  if (width < 480) return 46;
-  if (width < 720) return 50;
+  if (width < 480) return 51;
+  if (width < 720) return 55;
   return CONFIG.chipSize;
 }
 
@@ -66,7 +66,7 @@ function scatterChip(i, n, W, H, size) {
   const cols = Math.min(8, Math.max(4, Math.ceil(n / 2)));
   const col = i % cols;
   const row = Math.floor(i / cols);
-  const x = 28 + col * ((W - 56) / cols) + (i % 3) * 6;
+  const x = 28 + col * ((W - size) / cols) + (i % 3) * 6;
   const y = H - size - 20 - row * (size * 0.62) - (i % 2) * 8;
   const r = ((i % 5) - 2) * 7;
   return { x, y, r };

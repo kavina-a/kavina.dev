@@ -118,14 +118,17 @@ export const TECHSTACK = [
   { name: "TypeScript", slug: "typescript" },
   { name: "Next.js", slug: "nextdotjs" },
   { name: "React Native", slug: "reactnative" },
-  { name: "LLMs", slug: "llm" },
-  { name: "TTS", slug: "tts" },
-  { name: "STT", slug: "stt" },
-  { name: "STS", slug: "sts" },
+  { name: "Python", slug: "python" },
+  { name: "Java", slug: "java", fit: "heavy" },
+  { name: "Supabase", slug: "supabase" },
+  { name: "WebSockets", slug: "websocket" },
+  { name: "Webhooks", slug: "webhook" },
+  { name: "OAuth 2.0", slug: "oauth" },
   { name: "Docker Compose", slug: "docker", fit: "wide" },
   { name: "GitLab CI/CD", slug: "gitlab" },
-  { name: "AWS EC2", slug: "amazonec2" },
   { name: "Vercel", slug: "vercel" },
+  { name: "LangChain", slug: "langchain" },
+  { name: "LangGraph", slug: "langgraph" },
 ];
 
 // ─── Lore — the plots currently running ───────────────────────────────────

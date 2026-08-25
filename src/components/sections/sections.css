@@ -407,6 +407,10 @@
 }
 
 /* ============ CONTACT / BOT ============ */
+.contact {
+  padding-top: clamp(140px, 22vh, 260px);
+}
+
 .contact__header {
   margin-bottom: clamp(48px, 8vh, 90px);
 }

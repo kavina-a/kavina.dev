@@ -12,7 +12,7 @@
   --stack-muted: #8a8780;
   --stack-felt: #e7e3da;
   --stack-rim: #c9c4b8;
-  --chip-size: 56px;
+  --chip-size: 62px;
 
   position: relative;
   background: var(--stack-page);
@@ -92,7 +92,7 @@
 
 .stack__field {
   position: relative;
-  height: min(440px, 58vh);
+  height: min(500px, 64vh);
   overflow: hidden;
   border-radius: 17px 17px 0 0;
   background:
@@ -147,7 +147,7 @@
   align-items: center;
   justify-content: center;
   background: #fff;
-  border-radius: 14px;
+  border-radius: 15px;
   box-shadow:
     0 10px 22px rgba(32, 28, 22, 0.12),
     0 0 0 1px rgba(32, 28, 22, 0.06) inset;
@@ -170,6 +170,20 @@
   height: 70%;
 }
 
+.stack-chip[data-fit="heavy"] svg {
+  width: 68%;
+  height: 68%;
+}
+
+.stack-chip__letters {
+  font-family: "Inter", var(--font-sans);
+  font-weight: 700;
+  font-size: calc(var(--chip-size) * 0.24);
+  letter-spacing: -0.045em;
+  line-height: 1;
+  pointer-events: none;
+}
+
 @media (max-width: 720px) {
   .stack {
     padding-top: clamp(72px, 10vh, 110px);
@@ -177,7 +191,7 @@
   }
 
   .stack__field {
-    height: 340px;
+    height: 380px;
   }
 
   .stack-chip {
@@ -187,7 +201,7 @@
 
 @media (max-width: 480px) {
   .stack__field {
-    height: 300px;
+    height: 340px;
   }
 
   .stack__plate {
